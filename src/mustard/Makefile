@@ -41,7 +41,7 @@ NVSHMEM_PATH ?= /home/iturimbetov18/nvshmem-2.10
 #CUDA_PATH ?= /home/iturimbetov18/spack/opt/spack/linux-ubuntu20.04-zen2/gcc-11.1.0/cuda-12.0.0-a2fake52eupq3l3uvdy2effre2aesz7r
 #/home/iturimbetov18/spack/opt/spack/linux-ubuntu20.04-zen2/gcc-11.1.0/cuda-12.0.0-a2fake52eupq3l3uvdy2effre2aesz7r
 MPI_PATH ?= /home/iturimbetov18/spack/opt/spack/linux-ubuntu20.04-zen2/gcc-11.1.0/openmpi-4.1.5-xoj22elw2mrd44tgvizxqsm6k7b23pe6
-METIS_PATH ?= /home/iturimbetov18/METIS/build/metis64
+#METIS_PATH ?= /home/iturimbetov18/METIS/build/metis64
 
 ##############################
 # start deprecated interface #
@@ -283,9 +283,12 @@ ALL_LDFLAGS += $(addprefix -Xlinker ,$(LDFLAGS))
 ALL_LDFLAGS += $(addprefix -Xlinker ,$(EXTRA_LDFLAGS))
 
 # Common includes and paths for CUDA
-INCLUDES  := -I./include -I${METIS_PATH}/include -I${NVSHMEM_PATH}/include -I$(MPI_PATH)/include -DENABLE_MPI_SUPPORT #../../../Common
-LIBRARIES := -L${METIS_PATH}/libmetis -lmetis -L${NVSHMEM_PATH}/lib -lnvshmem -lnvidia-ml -lcuda -lcudart -lcublas -lcusolver -L$(MPI_PATH)/lib -lmpi
+INCLUDES  := -I./include -I${NVSHMEM_PATH}/include -I$(MPI_PATH)/include -DENABLE_MPI_SUPPORT #../../../Common
+LIBRARIES := -L${NVSHMEM_PATH}/lib -lnvshmem -lnvidia-ml -lcuda -lcudart -lcublas -lcusolver -lcusparse -L$(MPI_PATH)/lib -lmpi
 
+#INCLUDES  += -I${METIS_PATH}/include
+#LIBRARIES += -L${METIS_PATH}/libmetis -lmetis
+## TODO: if metis add METIS ##
 ################################################################################
 
 # Gencode arguments
@@ -322,7 +325,7 @@ endif
 # Target rules
 all: build
 
-build: chol_partg
+build: chol_partg lu_partg
 
 check.deps:
 ifeq ($(SAMPLE_ENABLED),0)
