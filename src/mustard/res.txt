@@ -1,0 +1,374 @@
+SUBGRAPH with N=1800 (6 of 300x300 tiles)
+SUBGRAPH with N=1800 (6 of 300x300 tiles)
+SUBGRAPH with N=1800 (6 of 300x300 tiles)
+SUBGRAPH with N=1800 (6 of 300x300 tiles)
+totalNodes=91
+bufferSize=848
+tileSize=614400
+totalNodes=91
+bufferSize=848
+tileSize=614400
+totalNodes=91
+bufferSize=848
+tileSize=614400
+totalNodes=91
+bufferSize=848
+tileSize=614400
+GPU memory usage: used = 502.750000, free = 39835.562500 MB, total = 40338.312500 MB
+GPU memory usage: used = 502.750000, free = 39835.562500 MB, total = 40338.312500 MB
+GPU memory usage: used = 502.750000, free = 39835.562500 MB, total = 40338.312500 MB
+GPU memory usage: used = 502.750000, free = 39835.562500 MB, total = 40338.312500 MB
+2 dev. 3, flags[FLAGS_SUBG_COUNT]=3
+2 dev. 3, flags[FLAGS_SUBG_COUNT]=5
+Updating dependency of NODE 9, from 2 to 1
+ERR with: 2 dev. 3, flags[FLAGS_SUBG_COUNT]=5
+Updating dependency of NODE 15, from 2 to 1
+2 dev. 6, flags[FLAGS_SUBG_COUNT]=6
+Updating dependency of NODE 21, from 2 to 1
+Updating dependency of NODE 27, from 2 to 1
+2 dev. 12, flags[FLAGS_SUBG_COUNT]=7
+Updating dependency of NODE 33, from 2 to 1
+2 dev. 12, flags[FLAGS_SUBG_COUNT]=8
+ERR with: 2 dev. 12, flags[FLAGS_SUBG_COUNT]=9
+Updating dependency of NODE 7, from 1 to 0
+Updating dependency of NODE 8, from 1 to 0
+Updating dependency of NODE 13, from 1 to 0
+2 dev. 8, flags[FLAGS_SUBG_COUNT]=11
+Updating dependency of NODE 9, from 1 to 0
+Updating dependency of NODE 14, from 1 to 0
+2 dev. 14, flags[FLAGS_SUBG_COUNT]=14
+Updating dependency of NODE 37, from 2 to 1
+Updating dependency of NODE 10, from 1 to 0
+Updating dependency of NODE 15, from 1 to 0
+2 dev. 10, flags[FLAGS_SUBG_COUNT]=18
+Updating dependency of NODE 42, from 3 to 2
+Updating dependency of NODE 11, from 1 to 0
+Updating dependency of NODE 16, from 1 to 0
+2 dev. 31, flags[FLAGS_SUBG_COUNT]=23
+Updating dependency of NODE 39, from 2 to 1
+Updating dependency of NODE 17, from 1 to 0
+2 dev. 28, flags[FLAGS_SUBG_COUNT]=29
+Updating dependency of NODE 56, from 2 to 1
+2 dev. 33, flags[FLAGS_SUBG_COUNT]=33
+Updating dependency of NODE 54, from 3 to 2
+Updating dependency of NODE 58, from 3 to 2
+2 dev. 35, flags[FLAGS_SUBG_COUNT]=40
+Updating dependency of NODE 60, from 3 to 2
+2 dev. 35, flags[FLAGS_SUBG_COUNT]=43
+ERR with: 2 dev. 35, flags[FLAGS_SUBG_COUNT]=44
+2 dev. 47, flags[FLAGS_SUBG_COUNT]=45
+2 dev. 48, flags[FLAGS_SUBG_COUNT]=47
+Updating dependency of NODE 65, from 2 to 1
+2 dev. 52, flags[FLAGS_SUBG_COUNT]=51
+Updating dependency of NODE 66, from 3 to 2
+2 dev. 59, flags[FLAGS_SUBG_COUNT]=55
+Updating dependency of NODE 69, from 2 to 1
+Updating dependency of NODE 75, from 3 to 2
+2 dev. 59, flags[FLAGS_SUBG_COUNT]=59
+ERR with: 2 dev. 59, flags[FLAGS_SUBG_COUNT]=61
+2 dev. 69, flags[FLAGS_SUBG_COUNT]=65
+2 dev. 69, flags[FLAGS_SUBG_COUNT]=68
+Updating dependency of NODE 70, from 1 to 0
+ERR with: 2 dev. 69, flags[FLAGS_SUBG_COUNT]=69
+Updating dependency of NODE 71, from 1 to 0
+2 dev. 71, flags[FLAGS_SUBG_COUNT]=71
+Updating dependency of NODE 72, from 1 to 0
+2 dev. 72, flags[FLAGS_SUBG_COUNT]=75
+Updating dependency of NODE 81, from 3 to 2
+Updating dependency of NODE 82, from 3 to 2
+2 dev. 72, flags[FLAGS_SUBG_COUNT]=78
+ERR with: 2 dev. 72, flags[FLAGS_SUBG_COUNT]=79
+2 dev. 72, flags[FLAGS_SUBG_COUNT]=80
+ERR with: 2 dev. 72, flags[FLAGS_SUBG_COUNT]=81
+3 dev. -1, flags[FLAGS_SUBG_COUNT]=7
+ERR with: 3 dev. -1, flags[FLAGS_SUBG_COUNT]=7
+3 dev. 7, flags[FLAGS_SUBG_COUNT]=9
+3 dev. 7, flags[FLAGS_SUBG_COUNT]=11
+Updating dependency of NODE 36, from 1 to 0
+ERR with: 3 dev. 7, flags[FLAGS_SUBG_COUNT]=11
+3 dev. 19, flags[FLAGS_SUBG_COUNT]=14
+Updating dependency of NODE 46, from 2 to 1
+3 dev. 21, flags[FLAGS_SUBG_COUNT]=18
+3 dev. 26, flags[FLAGS_SUBG_COUNT]=21
+Updating dependency of NODE 48, from 3 to 2
+3 dev. 23, flags[FLAGS_SUBG_COUNT]=24
+Updating dependency of NODE 52, from 3 to 2
+3 dev. 16, flags[FLAGS_SUBG_COUNT]=27
+Updating dependency of NODE 50, from 3 to 2
+3 dev. 29, flags[FLAGS_SUBG_COUNT]=31
+Updating dependency of NODE 44, from 3 to 2
+3 dev. 39, flags[FLAGS_SUBG_COUNT]=34
+Updating dependency of NODE 55, from 3 to 2
+3 dev. 41, flags[FLAGS_SUBG_COUNT]=37
+3 dev. 41, flags[FLAGS_SUBG_COUNT]=41
+Updating dependency of NODE 44, from 2 to 1
+ERR with: 3 dev. 41, flags[FLAGS_SUBG_COUNT]=43
+Updating dependency of NODE 49, from 2 to 1
+Updating dependency of NODE 54, from 2 to 1
+Updating dependency of NODE 42, from 1 to 0
+3 dev. 42, flags[FLAGS_SUBG_COUNT]=45
+Updating dependency of NODE 59, from 2 to 1
+Updating dependency of NODE 43, from 1 to 0
+3 dev. 43, flags[FLAGS_SUBG_COUNT]=46
+Updating dependency of NODE 61, from 1 to 0
+Updating dependency of NODE 44, from 1 to 0
+3 dev. 44, flags[FLAGS_SUBG_COUNT]=48
+Updating dependency of NODE 62, from 2 to 1
+Updating dependency of NODE 45, from 1 to 0
+3 dev. 45, flags[FLAGS_SUBG_COUNT]=51
+Updating dependency of NODE 63, from 2 to 1
+3 dev. 58, flags[FLAGS_SUBG_COUNT]=54
+Updating dependency of NODE 64, from 2 to 1
+3 dev. 62, flags[FLAGS_SUBG_COUNT]=57
+Updating dependency of NODE 74, from 3 to 2
+3 dev. 62, flags[FLAGS_SUBG_COUNT]=62
+ERR with: 3 dev. 62, flags[FLAGS_SUBG_COUNT]=63
+Updating dependency of NODE 66, from 2 to 1
+Updating dependency of NODE 70, from 2 to 1
+Updating dependency of NODE 74, from 2 to 1
+1 dev. 0, flags[FLAGS_SUBG_COUNT]=0
+Updating dependency of NODE 1, from 1 to 0
+1 dev. 1, flags[FLAGS_SUBG_COUNT]=1
+Updating dependency of NODE 2, from 1 to 0
+1 dev. 2, flags[FLAGS_SUBG_COUNT]=2
+Updating dependency of NODE 3, from 1 to 0
+Updating dependency of NODE 7, from 2 to 1
+Updating dependency of NODE 4, from 1 to 0
+1 dev. 2, flags[FLAGS_SUBG_COUNT]=3
+Updating dependency of NODE 13, from 2 to 1
+Updating dependency of NODE 8, from 2 to 1
+ERR with: 1 dev. 2, flags[FLAGS_SUBG_COUNT]=5
+Updating dependency of NODE 5, from 1 to 0
+Updating dependency of NODE 19, from 2 to 1
+Updating dependency of NODE 14, from 2 to 1
+Updating dependency of NODE 25, from 2 to 1
+Updating dependency of NODE 20, from 2 to 1
+Updating dependency of NODE 6, from 1 to 0
+1 dev. 2, flags[FLAGS_SUBG_COUNT]=6
+Updating dependency of NODE 31, from 2 to 1
+Updating dependency of NODE 26, from 2 to 1
+ERR with: 1 dev. 2, flags[FLAGS_SUBG_COUNT]=7
+Updating dependency of NODE 12, from 1 to 0
+Updating dependency of NODE 32, from 2 to 1
+Updating dependency of NODE 18, from 1 to 0
+1 dev. 2, flags[FLAGS_SUBG_COUNT]=8
+ERR with: 1 dev. 2, flags[FLAGS_SUBG_COUNT]=9
+Updating dependency of NODE 24, from 1 to 0
+Updating dependency of NODE 30, from 1 to 0
+1 dev. 30, flags[FLAGS_SUBG_COUNT]=11
+1 dev. 9, flags[FLAGS_SUBG_COUNT]=14
+1 dev. 25, flags[FLAGS_SUBG_COUNT]=16
+Updating dependency of NODE 38, from 2 to 1
+1 dev. 22, flags[FLAGS_SUBG_COUNT]=21
+Updating dependency of NODE 51, from 2 to 1
+Updating dependency of NODE 31, from 1 to 0
+Updating dependency of NODE 32, from 1 to 0
+1 dev. 11, flags[FLAGS_SUBG_COUNT]=26
+Updating dependency of NODE 49, from 3 to 2
+Updating dependency of NODE 33, from 1 to 0
+1 dev. 38, flags[FLAGS_SUBG_COUNT]=30
+Updating dependency of NODE 40, from 2 to 1
+Updating dependency of NODE 34, from 1 to 0
+1 dev. 40, flags[FLAGS_SUBG_COUNT]=35
+Updating dependency of NODE 35, from 1 to 0
+Updating dependency of NODE 43, from 2 to 1
+1 dev. 51, flags[FLAGS_SUBG_COUNT]=41
+Updating dependency of NODE 48, from 2 to 1
+Updating dependency of NODE 45, from 2 to 1
+Updating dependency of NODE 53, from 2 to 1
+Updating dependency of NODE 50, from 2 to 1
+1 dev. 51, flags[FLAGS_SUBG_COUNT]=45
+ERR with: 1 dev. 51, flags[FLAGS_SUBG_COUNT]=46
+Updating dependency of NODE 58, from 2 to 1
+Updating dependency of NODE 55, from 2 to 1
+Updating dependency of NODE 60, from 2 to 1
+1 dev. 49, flags[FLAGS_SUBG_COUNT]=48
+Updating dependency of NODE 52, from 1 to 0
+Updating dependency of NODE 53, from 1 to 0
+1 dev. 53, flags[FLAGS_SUBG_COUNT]=55
+Updating dependency of NODE 67, from 3 to 2
+Updating dependency of NODE 54, from 1 to 0
+Updating dependency of NODE 70, from 3 to 2
+1 dev. 63, flags[FLAGS_SUBG_COUNT]=60
+Updating dependency of NODE 55, from 1 to 0
+1 dev. 55, flags[FLAGS_SUBG_COUNT]=63
+Updating dependency of NODE 72, from 3 to 2
+Updating dependency of NODE 67, from 2 to 1
+1 dev. 55, flags[FLAGS_SUBG_COUNT]=66
+Updating dependency of NODE 71, from 2 to 1
+ERR with: 1 dev. 55, flags[FLAGS_SUBG_COUNT]=68
+Updating dependency of NODE 75, from 2 to 1
+1 dev. 70, flags[FLAGS_SUBG_COUNT]=69
+1 dev. 68, flags[FLAGS_SUBG_COUNT]=71
+Updating dependency of NODE 80, from 2 to 1
+1 dev. 68, flags[FLAGS_SUBG_COUNT]=74
+Updating dependency of NODE 79, from 2 to 1
+ERR with: 1 dev. 68, flags[FLAGS_SUBG_COUNT]=77
+1 dev. 68, flags[FLAGS_SUBG_COUNT]=80
+ERR with: 1 dev. 68, flags[FLAGS_SUBG_COUNT]=80
+1 dev. 68, flags[FLAGS_SUBG_COUNT]=82
+ERR with: 1 dev. 68, flags[FLAGS_SUBG_COUNT]=83
+1 dev. 68, flags[FLAGS_SUBG_COUNT]=87
+ERR with: 1 dev. 68, flags[FLAGS_SUBG_COUNT]=87
+1 dev. 68, flags[FLAGS_SUBG_COUNT]=89
+ERR with: 1 dev. 68, flags[FLAGS_SUBG_COUNT]=89
+2 dev. 72, flags[FLAGS_SUBG_COUNT]=82
+ERR with: 2 dev. 72, flags[FLAGS_SUBG_COUNT]=82
+2 dev. 85, flags[FLAGS_SUBG_COUNT]=84
+Updating dependency of NODE 89, from 3 to 2
+2 dev. 85, flags[FLAGS_SUBG_COUNT]=87
+ERR with: 2 dev. 85, flags[FLAGS_SUBG_COUNT]=87
+2 dev. 85, flags[FLAGS_SUBG_COUNT]=89
+ERR with: 2 dev. 85, flags[FLAGS_SUBG_COUNT]=89
+3 dev. 62, flags[FLAGS_SUBG_COUNT]=68
+ERR with: 3 dev. 62, flags[FLAGS_SUBG_COUNT]=68
+3 dev. 77, flags[FLAGS_SUBG_COUNT]=70
+3 dev. 75, flags[FLAGS_SUBG_COUNT]=73
+Updating dependency of NODE 84, from 3 to 2
+3 dev. 75, flags[FLAGS_SUBG_COUNT]=78
+Updating dependency of NODE 78, from 1 to 0
+ERR with: 3 dev. 75, flags[FLAGS_SUBG_COUNT]=78
+Updating dependency of NODE 79, from 1 to 0
+3 dev. 75, flags[FLAGS_SUBG_COUNT]=80
+Updating dependency of NODE 80, from 1 to 0
+ERR with: 3 dev. 75, flags[FLAGS_SUBG_COUNT]=80
+Updating dependency of NODE 83, from 1 to 0
+3 dev. 75, flags[FLAGS_SUBG_COUNT]=82
+ERR with: 3 dev. 75, flags[FLAGS_SUBG_COUNT]=82
+3 dev. 82, flags[FLAGS_SUBG_COUNT]=84
+Updating dependency of NODE 87, from 2 to 1
+3 dev. 82, flags[FLAGS_SUBG_COUNT]=87
+ERR with: 3 dev. 82, flags[FLAGS_SUBG_COUNT]=87
+3 dev. 82, flags[FLAGS_SUBG_COUNT]=89
+ERR with: 3 dev. 82, flags[FLAGS_SUBG_COUNT]=89
+0 dev. 4, flags[FLAGS_SUBG_COUNT]=3
+0 dev. 5, flags[FLAGS_SUBG_COUNT]=5
+Updating dependency of NODE 10, from 2 to 1
+0 dev. 5, flags[FLAGS_SUBG_COUNT]=6
+Updating dependency of NODE 16, from 2 to 1
+Updating dependency of NODE 11, from 2 to 1
+Updating dependency of NODE 22, from 2 to 1
+ERR with: 0 dev. 5, flags[FLAGS_SUBG_COUNT]=6
+Updating dependency of NODE 17, from 2 to 1
+Updating dependency of NODE 28, from 2 to 1
+Updating dependency of NODE 23, from 2 to 1
+Updating dependency of NODE 34, from 2 to 1
+Updating dependency of NODE 29, from 2 to 1
+0 dev. 18, flags[FLAGS_SUBG_COUNT]=8
+Updating dependency of NODE 35, from 2 to 1
+0 dev. 24, flags[FLAGS_SUBG_COUNT]=9
+0 dev. 13, flags[FLAGS_SUBG_COUNT]=11
+0 dev. 36, flags[FLAGS_SUBG_COUNT]=12
+Updating dependency of NODE 19, from 1 to 0
+Updating dependency of NODE 41, from 2 to 1
+Updating dependency of NODE 20, from 1 to 0
+0 dev. 20, flags[FLAGS_SUBG_COUNT]=15
+Updating dependency of NODE 25, from 1 to 0
+Updating dependency of NODE 21, from 1 to 0
+0 dev. 15, flags[FLAGS_SUBG_COUNT]=19
+Updating dependency of NODE 47, from 3 to 2
+Updating dependency of NODE 26, from 1 to 0
+Updating dependency of NODE 22, from 1 to 0
+Updating dependency of NODE 27, from 1 to 0
+Updating dependency of NODE 43, from 3 to 2
+0 dev. 27, flags[FLAGS_SUBG_COUNT]=22
+Updating dependency of NODE 23, from 1 to 0
+Updating dependency of NODE 37, from 1 to 0
+Updating dependency of NODE 28, from 1 to 0
+0 dev. 37, flags[FLAGS_SUBG_COUNT]=25
+Updating dependency of NODE 53, from 3 to 2
+Updating dependency of NODE 38, from 1 to 0
+Updating dependency of NODE 29, from 1 to 0
+0 dev. 32, flags[FLAGS_SUBG_COUNT]=29
+Updating dependency of NODE 39, from 1 to 0
+0 dev. 17, flags[FLAGS_SUBG_COUNT]=32
+Updating dependency of NODE 57, from 3 to 2
+Updating dependency of NODE 40, from 1 to 0
+Updating dependency of NODE 42, from 2 to 1
+0 dev. 34, flags[FLAGS_SUBG_COUNT]=36
+Updating dependency of NODE 45, from 3 to 2
+Updating dependency of NODE 41, from 1 to 0
+Updating dependency of NODE 47, from 2 to 1
+Updating dependency of NODE 46, from 1 to 0
+Updating dependency of NODE 52, from 2 to 1
+Updating dependency of NODE 59, from 3 to 2
+0 dev. 46, flags[FLAGS_SUBG_COUNT]=40
+Updating dependency of NODE 57, from 2 to 1
+Updating dependency of NODE 51, from 1 to 0
+Updating dependency of NODE 56, from 1 to 0
+0 dev. 56, flags[FLAGS_SUBG_COUNT]=43
+0 dev. 56, flags[FLAGS_SUBG_COUNT]=45
+Updating dependency of NODE 47, from 1 to 0
+ERR with: 0 dev. 56, flags[FLAGS_SUBG_COUNT]=45
+Updating dependency of NODE 48, from 1 to 0
+0 dev. 61, flags[FLAGS_SUBG_COUNT]=47
+Updating dependency of NODE 49, from 1 to 0
+Updating dependency of NODE 57, from 1 to 0
+0 dev. 57, flags[FLAGS_SUBG_COUNT]=49
+Updating dependency of NODE 50, from 1 to 0
+Updating dependency of NODE 58, from 1 to 0
+0 dev. 50, flags[FLAGS_SUBG_COUNT]=52
+Updating dependency of NODE 73, from 2 to 1
+Updating dependency of NODE 59, from 1 to 0
+Updating dependency of NODE 60, from 1 to 0
+0 dev. 60, flags[FLAGS_SUBG_COUNT]=56
+Updating dependency of NODE 68, from 3 to 2
+Updating dependency of NODE 62, from 1 to 0
+0 dev. 54, flags[FLAGS_SUBG_COUNT]=60
+Updating dependency of NODE 76, from 3 to 2
+Updating dependency of NODE 63, from 1 to 0
+Updating dependency of NODE 64, from 1 to 0
+0 dev. 64, flags[FLAGS_SUBG_COUNT]=62
+Updating dependency of NODE 71, from 3 to 2
+Updating dependency of NODE 65, from 1 to 0
+0 dev. 65, flags[FLAGS_SUBG_COUNT]=64
+Updating dependency of NODE 69, from 1 to 0
+Updating dependency of NODE 68, from 2 to 1
+Updating dependency of NODE 73, from 1 to 0
+0 dev. 73, flags[FLAGS_SUBG_COUNT]=66
+Updating dependency of NODE 72, from 2 to 1
+Updating dependency of NODE 76, from 2 to 1
+Updating dependency of NODE 66, from 1 to 0
+0 dev. 66, flags[FLAGS_SUBG_COUNT]=68
+Updating dependency of NODE 67, from 1 to 0
+0 dev. 67, flags[FLAGS_SUBG_COUNT]=69
+Updating dependency of NODE 77, from 1 to 0
+Updating dependency of NODE 74, from 1 to 0
+Updating dependency of NODE 68, from 1 to 0
+0 dev. 74, flags[FLAGS_SUBG_COUNT]=71
+Updating dependency of NODE 78, from 2 to 1
+Updating dependency of NODE 75, from 1 to 0
+Updating dependency of NODE 83, from 2 to 1
+Updating dependency of NODE 76, from 1 to 0
+0 dev. 76, flags[FLAGS_SUBG_COUNT]=74
+Updating dependency of NODE 85, from 3 to 2
+0 dev. 78, flags[FLAGS_SUBG_COUNT]=78
+0 dev. 79, flags[FLAGS_SUBG_COUNT]=79
+0 dev. 80, flags[FLAGS_SUBG_COUNT]=80
+Updating dependency of NODE 81, from 2 to 1
+0 dev. 83, flags[FLAGS_SUBG_COUNT]=81
+Updating dependency of NODE 82, from 2 to 1
+Updating dependency of NODE 84, from 2 to 1
+Updating dependency of NODE 85, from 2 to 1
+Updating dependency of NODE 81, from 1 to 0
+0 dev. 81, flags[FLAGS_SUBG_COUNT]=82
+Updating dependency of NODE 84, from 1 to 0
+0 dev. 84, flags[FLAGS_SUBG_COUNT]=83
+Updating dependency of NODE 82, from 1 to 0
+Updating dependency of NODE 86, from 1 to 0
+Updating dependency of NODE 85, from 1 to 0
+0 dev. 86, flags[FLAGS_SUBG_COUNT]=84
+Updating dependency of NODE 88, from 2 to 1
+Updating dependency of NODE 87, from 1 to 0
+0 dev. 87, flags[FLAGS_SUBG_COUNT]=87
+Updating dependency of NODE 88, from 1 to 0
+0 dev. 88, flags[FLAGS_SUBG_COUNT]=88
+Updating dependency of NODE 89, from 2 to 1
+Updating dependency of NODE 89, from 1 to 0
+0 dev. 89, flags[FLAGS_SUBG_COUNT]=89
+Updating dependency of NODE 90, from 1 to 0
+0 dev. 90, flags[FLAGS_SUBG_COUNT]=90
+Total time used (s): 0.0055
+Total time used (s): 0.0051
+Total time used (s): 0.0046
+Total time used (s): 0.0056

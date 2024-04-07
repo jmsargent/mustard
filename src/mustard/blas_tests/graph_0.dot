@@ -1,0 +1,38 @@
+digraph dot {
+subgraph cluster_2 {
+label="graph_2" graph[style="dashed"];
+"graph_2_node_0"[style="solid" shape="trapezium"label="0
+MEMCPY
+(DtoD,128000000)
+"];
+
+"graph_2_node_1"[style="bold" shape="octagon" label="1
+_Z19xxtrf4_set_info_keriPi
+"];
+
+"graph_2_node_2"[style="solid" shape="invtrapezium"label="2
+MEMSET
+(0,4)
+"];
+
+"graph_2_node_3"[style="solid" shape="invtrapezium"label="3
+MEMSET
+(0,15876)
+"];
+
+"graph_2_node_4"[style="bold" shape="octagon" label="4
+_Z6kernelI22getrf_wo_pivot_params_IdLi1ELi256ELi1ELi64ELi64ELi68ELi16ELi1ELi1EEEviiPviS2_iiiiiPi
+"];
+
+"graph_2_node_5"[style="solid" shape="trapezium"label="5
+MEMCPY
+(DtoD,128000000)
+"];
+
+"graph_2_node_0" -> "graph_2_node_1";
+"graph_2_node_1" -> "graph_2_node_2";
+"graph_2_node_2" -> "graph_2_node_3";
+"graph_2_node_3" -> "graph_2_node_4";
+"graph_2_node_4" -> "graph_2_node_5";
+}
+}

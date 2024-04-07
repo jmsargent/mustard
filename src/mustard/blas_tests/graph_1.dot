@@ -1,0 +1,171 @@
+digraph dot {
+subgraph cluster_3 {
+label="graph_3" graph[style="dashed"];
+"graph_3_node_0"[style="solid" shape="trapezium"label="0
+MEMCPY
+(DtoD,128000000)
+"];
+
+"graph_3_node_1"[style="bold" shape="octagon" label="1
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_2"[style="bold" shape="octagon" label="2
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_3"[style="bold" shape="octagon" label="3
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_4"[style="bold" shape="octagon" label="4
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_5"[style="bold" shape="octagon" label="5
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_6"[style="bold" shape="octagon" label="6
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_7"[style="bold" shape="octagon" label="7
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_8"[style="bold" shape="octagon" label="8
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_64x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_9"[style="bold" shape="octagon" label="9
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_10"[style="bold" shape="octagon" label="10
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_11"[style="bold" shape="octagon" label="11
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_12"[style="bold" shape="octagon" label="12
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_13"[style="bold" shape="octagon" label="13
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_14"[style="bold" shape="octagon" label="14
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_15"[style="bold" shape="octagon" label="15
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_16"[style="bold" shape="octagon" label="16
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_17"[style="bold" shape="octagon" label="17
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_18"[style="bold" shape="octagon" label="18
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_19"[style="bold" shape="octagon" label="19
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_20"[style="bold" shape="octagon" label="20
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_21"[style="bold" shape="octagon" label="21
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_22"[style="bold" shape="octagon" label="22
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_23"[style="bold" shape="octagon" label="23
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_24"[style="bold" shape="octagon" label="24
+_ZN7cutlass7Kernel2I50cutlass_80_tensorop_d884gemm_64x128_16x3_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_25"[style="bold" shape="octagon" label="25
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_26"[style="bold" shape="octagon" label="26
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_27"[style="bold" shape="octagon" label="27
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_28"[style="bold" shape="octagon" label="28
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_29"[style="bold" shape="octagon" label="29
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_30"[style="bold" shape="octagon" label="30
+_ZN7cutlass7Kernel2I49cutlass_80_tensorop_d884gemm_32x64_16x4_nn_align1EEvNT_6ParamsE
+"];
+
+"graph_3_node_31"[style="bold" shape="octagon" label="31
+_Z19kernel_trsm_l_mul32IdLi8ELb0ELb0ELb0ELb1EEviiPKT_S2_iPS0_iS0_i
+"];
+
+"graph_3_node_32"[style="solid" shape="trapezium"label="32
+MEMCPY
+(DtoD,128000000)
+"];
+
+"graph_3_node_0" -> "graph_3_node_1";
+"graph_3_node_1" -> "graph_3_node_2";
+"graph_3_node_2" -> "graph_3_node_3";
+"graph_3_node_3" -> "graph_3_node_4";
+"graph_3_node_4" -> "graph_3_node_5";
+"graph_3_node_5" -> "graph_3_node_6";
+"graph_3_node_6" -> "graph_3_node_7";
+"graph_3_node_7" -> "graph_3_node_8";
+"graph_3_node_8" -> "graph_3_node_9";
+"graph_3_node_9" -> "graph_3_node_10";
+"graph_3_node_10" -> "graph_3_node_11";
+"graph_3_node_11" -> "graph_3_node_12";
+"graph_3_node_12" -> "graph_3_node_13";
+"graph_3_node_13" -> "graph_3_node_14";
+"graph_3_node_14" -> "graph_3_node_15";
+"graph_3_node_15" -> "graph_3_node_16";
+"graph_3_node_16" -> "graph_3_node_17";
+"graph_3_node_17" -> "graph_3_node_18";
+"graph_3_node_18" -> "graph_3_node_19";
+"graph_3_node_19" -> "graph_3_node_20";
+"graph_3_node_20" -> "graph_3_node_21";
+"graph_3_node_21" -> "graph_3_node_22";
+"graph_3_node_22" -> "graph_3_node_23";
+"graph_3_node_23" -> "graph_3_node_24";
+"graph_3_node_24" -> "graph_3_node_25";
+"graph_3_node_25" -> "graph_3_node_26";
+"graph_3_node_26" -> "graph_3_node_27";
+"graph_3_node_27" -> "graph_3_node_28";
+"graph_3_node_28" -> "graph_3_node_29";
+"graph_3_node_29" -> "graph_3_node_30";
+"graph_3_node_30" -> "graph_3_node_31";
+"graph_3_node_31" -> "graph_3_node_32";
+}
+}

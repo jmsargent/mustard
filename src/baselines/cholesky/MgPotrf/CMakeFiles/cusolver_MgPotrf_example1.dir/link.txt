@@ -1,0 +1,1 @@
+/usr/bin/g++ CMakeFiles/cusolver_MgPotrf_example1.dir/cusolver_MgPotrf_example1.cu.o -o cusolver_MgPotrf_example1  -lcusolver -lcublas -lcublasLt -lcusparse -lcusolverMg -lcudadevrt -lcudart_static -lrt -lpthread -ldl  -L"/usr/local/cuda-12.3/targets/x86_64-linux/lib/stubs" -L"/usr/local/cuda-12.3/targets/x86_64-linux/lib"
