@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
     auto cmdl = argh::parser(argc, argv);
 
     int N = 24000;
-    int T = 1000; /* tile size */
+    int T = 100; /* tile size */
     int MAX_NUM_DEVICES = 8;
     int runs = 1;
     if (!(cmdl({"g", "gpu", "gpu_count", "GPU"}, MAX_NUM_DEVICES) >> MAX_NUM_DEVICES)) {
@@ -322,6 +322,8 @@ int main(int argc, char *argv[]) {
     //clock.start();
     double totalTime = 0.0;
     for (int i = 0; i < runs; i++) {
+        CUDA_CHECK(cudaDeviceSynchronize());
+
         auto start = std::chrono::high_resolution_clock::now();
         CUSOLVER_CHECK(
             cusolverMgGetrf(cusolverH, N, N, reinterpret_cast<void **>(array_d_A.data()), IA, JA,

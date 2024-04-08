@@ -1,2 +1,2 @@
 build/
-cusolver_MgGetrf_example
+./cusolver_MgGetrf_example
