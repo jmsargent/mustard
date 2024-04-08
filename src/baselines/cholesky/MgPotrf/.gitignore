@@ -1,1 +1,5 @@
 build/
+cusolver_MgPotrf_example1
+cusolver_MgPotrf_example2
+cusolver_MgPotrf_example1.o
+cusolver_MgPotrf_example2.o

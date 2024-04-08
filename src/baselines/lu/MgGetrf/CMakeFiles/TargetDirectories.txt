@@ -1,8 +1,0 @@
-/home/iturimbetov18/repos/CUDALibrarySamples/cuSOLVER/MgGetrf/CMakeFiles/cusolver_examples.dir
-/home/iturimbetov18/repos/CUDALibrarySamples/cuSOLVER/MgGetrf/CMakeFiles/cusolver_MgGetrf_example.dir
-/home/iturimbetov18/repos/CUDALibrarySamples/cuSOLVER/MgGetrf/CMakeFiles/edit_cache.dir
-/home/iturimbetov18/repos/CUDALibrarySamples/cuSOLVER/MgGetrf/CMakeFiles/rebuild_cache.dir
-/home/iturimbetov18/repos/CUDALibrarySamples/cuSOLVER/MgGetrf/CMakeFiles/list_install_components.dir
-/home/iturimbetov18/repos/CUDALibrarySamples/cuSOLVER/MgGetrf/CMakeFiles/install.dir
-/home/iturimbetov18/repos/CUDALibrarySamples/cuSOLVER/MgGetrf/CMakeFiles/install/local.dir
-/home/iturimbetov18/repos/CUDALibrarySamples/cuSOLVER/MgGetrf/CMakeFiles/install/strip.dir

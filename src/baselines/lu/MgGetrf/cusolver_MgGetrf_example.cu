@@ -69,49 +69,6 @@ template <typename T> static T vec_nrm_inf(int n, const T *x) {
     return max_nrm;
 }
 
-
-
-class CudaEventClock
-{
-public:
-    CudaEventClock();
-    ~CudaEventClock();
-    void start(cudaStream_t stream = 0);
-    void end(cudaStream_t stream = 0);
-    float getTimeInSeconds();
-
-private:
-    cudaEvent_t startEvent, endEvent;
-};
-
-CudaEventClock::CudaEventClock()
-{
-    CUDA_CHECK(cudaEventCreate(&this->startEvent));
-    CUDA_CHECK(cudaEventCreate(&this->endEvent));
-}
-
-CudaEventClock::~CudaEventClock()
-{
-    CUDA_CHECK(cudaEventDestroy(this->startEvent));
-    CUDA_CHECK(cudaEventDestroy(this->endEvent));
-}
-
-void CudaEventClock::start(cudaStream_t stream)
-{
-    CUDA_CHECK(cudaEventRecord(this->startEvent, stream));
-}
-
-void CudaEventClock::end(cudaStream_t stream)
-{
-    CUDA_CHECK(cudaEventRecord(this->endEvent, stream));
-}
-
-float CudaEventClock::getTimeInSeconds()
-{
-    float time;
-    CUDA_CHECK(cudaEventElapsedTime(&time, this->startEvent, this->endEvent));
-    return time * 1e-3f;
-}
 // Credit to: https://math.stackexchange.com/questions/357980/how-to-generate-random-symmetric-positive-definite-matrices-using-matlab
 void generateRandomSymmetricPositiveDefiniteMatrix(double *h_A, const size_t n)
 {
