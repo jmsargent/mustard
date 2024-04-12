@@ -400,7 +400,7 @@ public:
             // auto dependencies = this->getSubgraphDependencies(tiles);
             this->subgraphDependencies[index_counter] = this->getSubgraphDependencies(tiles);
             checkCudaErrors(cudaGraphCreate(&this->subgraphs[index_counter], 0)); 
-            std::cout << "Start capturing subgraph " << index_counter << std::endl;
+            // std::cout << "Start capturing subgraph " << index_counter << std::endl;
             checkCudaErrors(cudaStreamBeginCaptureToGraph(this->stream, this->subgraphs[index_counter], nullptr, 
                                                           nullptr, 0, cudaStreamCaptureModeGlobal));
         }
@@ -415,7 +415,7 @@ public:
         } else {
             checkCudaErrors(cudaStreamEndCapture(this->stream, &(this->subgraphs[index_counter])));
             this->tileIndexByMap[this->lastModifiedTile] = this->index_counter;
-            std::cout << "End capturing subgraph " << index_counter << std::endl;
+            // std::cout << "End capturing subgraph " << index_counter << std::endl;
             this->index_counter++;
         }
         this->lastModifiedTile = std::make_pair(-1, -1);
@@ -452,6 +452,8 @@ public:
         //     void *kernelArgs[5] = {&queue, &d_dependencies/*[0]*/, &dst, &sm_count, &flags}; 
         //     params.kernelParams = kernelArgs;
         // }
+
+        // TODO: make them parallel, not serial
         std::vector<cudaGraphNode_t> deps;
         deps.push_back(getTail(this->subgraphs[src]));
         checkCudaErrors(cudaGraphAddKernelNode(&dependencyUpdateNode, this->subgraphs[src], deps.data(),
@@ -733,9 +735,9 @@ void tiledCholesky(bool verify, bool subgraph, bool dot)
 
     int totalNodes = T;
     
-    for (int k = 0; k < T; k++)
-        for (int i = k + 1; i < T; i++)
-            totalNodes += 2 + (T-(k+1));
+    for (int k = 0; k < T; k++) 
+        for (int i = k + 1; i < T; i++) 
+            totalNodes += 2 + (T-(i+1));
 
     if (verbose) {
         std::cout << "totalNodes=" << totalNodes << std::endl;
@@ -884,7 +886,7 @@ void tiledCholesky(bool verify, bool subgraph, bool dot)
             }
             tiledCholeskyGraphCreator->endCaptureOperation();
 
-            for (int j = k + 1; j < T; j++)
+            for (int j = i + 1; j < T; j++)
             {
                 // A[j][i] = GEMM(A[j][k], A[i][k])
                 // A[j][i] = A[j][i] - L[j][k] * L[i][k]^T

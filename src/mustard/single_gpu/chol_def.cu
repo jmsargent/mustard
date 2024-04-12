@@ -21,8 +21,8 @@
 #include "../include/argh.h"
 // #include "../utilities/cudaUtilities.hpp"
 
-constexpr size_t N = 16;
-constexpr size_t B = N / 4;
+constexpr size_t N = 8;
+constexpr size_t B = N / 2;
 constexpr size_t T = N / B;
 
 template <typename T>

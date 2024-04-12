@@ -42,8 +42,8 @@ else
 fi
 
 STARPU_BUILD_DIR="/home/iturimbetov18/repos/starpu-1.3.11/build"
-MG_SAMPLES_DIR="/home/iturimbetov18/repos/CUDALibrarySamples/cuSOLVER/MgPotrf"
-MCUDAGRAPH_DIR="/home/iturimbetov18/repos/optimize-cuda-memory-usage-v1/partg"
+MG_SAMPLES_DIR="../baselines/cholesky/MgPotrf"
+MCUDAGRAPH_DIR="../mustard"
 
 T=6
 N=24000
@@ -58,12 +58,12 @@ then
     for ((g = 1 ; g <= 4 ; g++ )); do
         echo "$CUDA_VISIBLE_DEVICES"
         if [ $method -eq -1 ] || [ $method -eq 3 ]; then $MPI_HOME/bin/mpirun -n $g $MCUDAGRAPH_DIR/chol_partg -N=$N -T=$T -subgraph $verb -workspace=256 -sm=20 -run=$runs >> chol_logs/$N/log2_$N\_$T\_$g\GPU.log  ; fi
-
-        for ((i = 0 ; i < $runs ; i++ )); do
-            if [ $method -eq -1 ] || [ $method -eq 4 ]; then $MG_SAMPLES_DIR/cusolver_MgPotrf_example1 >> chol_logs/$N/log3_$N\_$T\_$g\GPU.log ; fi
-            # if [ $method -eq -1 ] || [ $method -eq 5 ]; then STARPU_SCHED=dmdas $STARPU_BUILD_DIR/examples/lu/lu_example_double -size $(($N)) -nblocks $TS >> chol_logs/$N/log4_$N\_$TS\_$g\GPU.log ; fi
-            #STARPU_SCHED=dmdas $STARPU_BUILD_DIR/examples/lu/lu_example_double -size $((24000)) -nblocks 12; done
-        done
+        if [ $method -eq -1 ] || [ $method -eq 4 ]; then $MG_SAMPLES_DIR/cusolver_MgPotrf_example1 -N=$N -B=1000 -run=$runs >> chol_logs/$N/log3_$N\_$T\_$g\GPU.log ; fi
+            
+        # for ((i = 0 ; i < $runs ; i++ )); do
+        #     # if [ $method -eq -1 ] || [ $method -eq 5 ]; then STARPU_SCHED=dmdas $STARPU_BUILD_DIR/examples/lu/lu_example_double -size $(($N)) -nblocks $TS >> chol_logs/$N/log4_$N\_$TS\_$g\GPU.log ; fi
+        #     #STARPU_SCHED=dmdas $STARPU_BUILD_DIR/examples/lu/lu_example_double -size $((24000)) -nblocks 12; done
+        # done
         export CUDA_VISIBLE_DEVICES="$CUDA_VISIBLE_DEVICES,$g"
     done
 else 
@@ -76,8 +76,10 @@ else
         export CUDA_VISIBLE_DEVICES="$CUDA_VISIBLE_DEVICES,$g"
     done
     echo "$CUDA_VISIBLE_DEVICES"
-    for ((i = 0 ; i < $runs ; i++ )); do
-        if [ $method -eq -1 ] || [ $method -eq 4 ]; then $MG_SAMPLES_DIR/cusolver_MgPotrf_example1 ; fi    
-        # if [ $method -eq -1 ] || [ $method -eq 5 ]; then STARPU_SCHED=dmdas $STARPU_BUILD_DIR/examples/lu/lu_example_double -size $(($N)) -nblocks $TS ; fi
-    done
+
+    if [ $method -eq -1 ] || [ $method -eq 4 ]; then $MG_SAMPLES_DIR/cusolver_MgPotrf_example1 -N=$N -T=100 -run=$runs; fi    
+        
+    # for ((i = 0 ; i < $runs ; i++ )); do
+    #     # if [ $method -eq -1 ] || [ $method -eq 5 ]; then STARPU_SCHED=dmdas $STARPU_BUILD_DIR/examples/lu/lu_example_double -size $(($N)) -nblocks $TS ; fi
+    # done
 fi

@@ -7,11 +7,12 @@ from matplotlib import pyplot as plt
 
 title = "LU"
 metric = "flops"
-log_folder = "./logs/24000"
-#log_folder = "./chol_logs/24000"
+#log_folder = "./logs/24000"
+log_folder = "./chol_logs/24000"
+gpu_count = 4
 data = pd.DataFrame(columns=['method','gpu_count','time','flops'])
-methods = {0: "getrf", 1: "cudaGraph", 2: "ours", 3: "MgGetrf", 4: "StarPU"}
-#methods = {0: "potrf", 1: "cudaGraph", 2: "ours", 3: "MgPotrf"}
+#methods = {0: "getrf", 1: "cudaGraph", 2: "ours", 3: "MgGetrf", 4: "StarPU"}
+methods = {0: "potrf", 1: "cudaGraph", 2: "ours", 3: "MgPotrf"}
 
 # LU flop calculation
 def getFLOPs(n, time):
@@ -41,7 +42,7 @@ def readMG(file, params):
     gpu_count = int(params[3][:-3])
     data_point = [method,gpu_count,0.0,0.0]
     for line in file.readlines():
-        if (line.startswith("Total")):
+        if (line.startswith("Run")):
             #print(line)
             runtime = float(line.split(" ")[-1])
             data_point[2] = runtime
@@ -110,7 +111,6 @@ sns.set_theme(style="whitegrid")
 #     x="species", y="body_mass_g", hue="sex",
 #     errorbar="sd", palette="dark", alpha=.6, height=6
 # )
-gpu_count = 4
 fig, axes = plt.subplots(1, gpu_count, figsize=(15, 5), sharey=True)
 
 baseline_method=data[data["method"] == methods[1]]
