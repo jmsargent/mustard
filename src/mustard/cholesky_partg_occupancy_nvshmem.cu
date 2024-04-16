@@ -950,7 +950,7 @@ void tiledCholesky(bool verify, bool subgraph, bool dot)
     double totalTime = 0.0;
     
     if (subgraph) {
-        if (dot)
+        if (verbose)
             tiledCholeskyGraphCreator->printDeps();
         
         // volatile int *d_flags;
