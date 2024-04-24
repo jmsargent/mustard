@@ -967,7 +967,7 @@ void tiledLU(bool verify, bool subgraph, bool dot)
         tiledLUGraphCreator->endCaptureOperation();
         
         if (B > MAX_TILE && subgraph) {
-            int subT = max(int(B/MAX_TILE)+1, 2);
+            int subT = max(int(B/MAX_TILE), 2);
             if (B%subT > 0) {
                 while (B%subT != 0) subT++;
             }
