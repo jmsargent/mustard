@@ -97,21 +97,20 @@ static void gen_ref_B(int N, int NRHS, double *A, int lda, double *X, int ldx, d
         }
     }
 }
+
 // Credit to: https://math.stackexchange.com/questions/357980/how-to-generate-random-symmetric-positive-definite-matrices-using-matlab
 void generateRandomSymmetricPositiveDefiniteMatrix(double *h_A, const size_t n)
 {
     // srand(time(NULL));
     srand(420);
 
-    double *h_A_temp = (double *)malloc(n * n * sizeof(double));
+    for (int i = 0; i < n; i++)
+        for (int j = i; j < n; j++)
+            h_A[i * n + j] = 0.5 * (float)rand() / (float)RAND_MAX;
 
     for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            h_A_temp[i * n + j] = (float)rand() / (float)RAND_MAX;
-
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            h_A[i * n + j] = 0.5 * (h_A_temp[i * n + j] + h_A_temp[j * n + i]);
+        for (int j = i; j >= 0; j--)
+            h_A[i * n + j] = h_A[j * n + i];
 
     for (int i = 0; i < n; i++)
         h_A[i * n + i] = h_A[i * n + i] + n;
@@ -134,7 +133,7 @@ void printSquareMatrix(double *h_A, const size_t n)
 int main(int argc, char *argv[]) {
     auto cmdl = argh::parser(argc, argv);
 
-    int N = 24000;
+    size_t N = 24000;
     int T = 100; /* tile size */
 
     /* maximum number of GPUs */
@@ -212,7 +211,8 @@ int main(int argc, char *argv[]) {
     enablePeerAccess(nbGpus, deviceList.data());
 
     std::printf("Step 3: Allocate host memory A \n");
-    std::vector<data_type> A(lda * N, 0);
+    double *A = (double *)malloc(lda * N * sizeof(double));
+    // std::vector<data_type> A(lda * N, 0);
     std::vector<data_type> B(ldb * NRHS, 0);
     std::vector<data_type> X(ldb * NRHS, 0);
 
@@ -222,7 +222,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef SHOW_FORMAT
     std::printf("A = matlab base-1\n");
-    print_matrix(N, N, A.data(), lda);
+    print_matrix(N, N, A, lda);
 #endif
 
     /* X = ones(N,1) */
@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
 
     /* Set B := A * X */
     printf("Step 5: Create RHS for reference solution on host B = A*X \n");
-    gen_ref_B<data_type>(N, NRHS, A.data(), /* input */
+    gen_ref_B<data_type>(N, NRHS, A, /* input */
                          lda, X.data(),     /* input */
                          ldb,               /* same leading dimension as B */
                          B.data(),          /* output */
@@ -289,7 +289,7 @@ int main(int argc, char *argv[]) {
     std::printf("Step 8: Prepare data on devices \n");
     memcpyH2D<data_type>(nbGpus, deviceList.data(), N, N,
                          /* input */
-                         A.data(), lda,
+                         A, lda,
                          /* output */
                          N,                /* number of columns of global A */
                          T,              /* number of columns per column tile */
@@ -353,7 +353,7 @@ int main(int argc, char *argv[]) {
         if (i != runs-1)
             memcpyH2D<data_type>(nbGpus, deviceList.data(), N, N,
                                 /* input */
-                                A.data(), lda,
+                                A, lda,
                                 /* output */
                                 N,                /* number of columns of global A */
                                 T,              /* number of columns per column tile */
