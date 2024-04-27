@@ -2,6 +2,7 @@
 #include <cuda_runtime_api.h>
 #include <iomanip>
 
+#include "gen.h"
 
 template <typename T>
 void __check(T result, char const *const func, const char *const file, int const line)
@@ -105,26 +106,6 @@ float CudaEventClock::getTimeInSeconds()
     float time;
     checkCudaErrors(cudaEventElapsedTime(&time, this->startEvent, this->endEvent));
     return time * 1e-3f;
-}
-
-// Credit to: https://math.stackexchange.com/questions/357980/how-to-generate-random-symmetric-positive-definite-matrices-using-matlab
-void generateRandomSymmetricPositiveDefiniteMatrix(double *h_A, const size_t n)
-{
-    // srand(time(NULL));
-    srand(420);
-
-    double *h_A_temp = (double *)malloc(n * n * sizeof(double));
-
-    for (int i = 0; i < n; i++)
-        for (int j = i; j < n; j++)
-            h_A[i * n + j] = 0.5 * (float)rand() / (float)RAND_MAX;
-
-    for (int i = 0; i < n; i++)
-        for (int j = i; j >= 0; j--)
-            h_A[i * n + j] = h_A[j * n + i];
-
-    for (int i = 0; i < n; i++)
-        h_A[i * n + i] = h_A[i * n + i] + n;
 }
 
 void printSquareMatrix(double *h_A, const size_t n)

@@ -32,17 +32,16 @@
 ################################################################################
 
 # Location of the CUDA Toolkit
-SPACK_PATH ?= /truba/home/iturimbetov/spack/opt/spack/linux-rhel8-haswell/gcc-12.2.0/
-CUDA_PATH ?= $(SPACK_PATH)/cuda-12.3.2-si3xh46372xqqv7ilnpgsbpmshivdzrv
+CUDA_PATH ?= /usr/local/cuda-12.3
 #CUDA_PATH ?= /home/iturimbetov18/spack/opt/spack/linux-ubuntu20.04-zen2/gcc-11.1.0/cuda-11.8.0-4spc5uo5n3a6oh67o3qkfuqlz4y6qu5r
-NVSHMEM_PATH ?= /truba/home/iturimbetov/nvshmem-2.11
+NVSHMEM_PATH ?= /home/iturimbetov18/nvshmem-2.10
 #/home/jbaydamirli21/nvshmem/nvshmem_src_2.9.0-2
 #/usr/local/nvshmem
 #/home/iturimbetov18/nvshmem_src_2.9.0-2/build/src
 #CUDA_PATH ?= /home/iturimbetov18/spack/opt/spack/linux-ubuntu20.04-zen2/gcc-11.1.0/cuda-12.0.0-a2fake52eupq3l3uvdy2effre2aesz7r
 #/home/iturimbetov18/spack/opt/spack/linux-ubuntu20.04-zen2/gcc-11.1.0/cuda-12.0.0-a2fake52eupq3l3uvdy2effre2aesz7r
-MPI_PATH ?= $(SPACK_PATH)/openmpi-5.0.2-fsapuqh6k5fzsaasuqn4a45t4vbywxiu
-METIS_PATH ?= /truba/home/iturimbetov/metis
+MPI_PATH ?= /home/iturimbetov18/spack/opt/spack/linux-ubuntu20.04-zen2/gcc-11.1.0/openmpi-4.1.5-xoj22elw2mrd44tgvizxqsm6k7b23pe6
+METIS_PATH ?= /home/iturimbetov18/METIS/build/metis64
 
 ##############################
 # start deprecated interface #
@@ -285,7 +284,7 @@ ALL_LDFLAGS += $(addprefix -Xlinker ,$(EXTRA_LDFLAGS))
 
 # Common includes and paths for CUDA
 INCLUDES  := -I../include -I${METIS_PATH}/include -I${NVSHMEM_PATH}/include -I$(MPI_PATH)/include -DENABLE_MPI_SUPPORT #../../../Common
-LIBRARIES := -L${METIS_PATH}/lib -lmetis -L${NVSHMEM_PATH}/lib -lnvshmem -lnvidia-ml -lcuda -lcudart -lcublas -lcusolver -L$(MPI_PATH)/lib -lmpi
+LIBRARIES := -L${METIS_PATH}/libmetis -lmetis -L${NVSHMEM_PATH}/lib -lnvshmem -lnvidia-ml -lcuda -lcudart -lcublas -lcusolver -L$(MPI_PATH)/lib -lmpi
 
 ################################################################################
 
@@ -333,7 +332,7 @@ else
 endif
 
 lu_partg.o:lu_partg_occupancy_nvshmem.cu
-	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) -g -D_GLIBCXX_DEBUG -Xcompiler -Werror -D_FORCE_INLINES -DVERBOSE --expt-extended-lambda -use_fast_math --expt-relaxed-constexpr -L$(CUDA_PATH)/lib64 $(GENCODE_FLAGS) -o $@ -c $<
+	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) -Xcompiler -Werror -D_FORCE_INLINES -DVERBOSE --expt-extended-lambda -use_fast_math --expt-relaxed-constexpr -L$(CUDA_PATH)/lib64 $(GENCODE_FLAGS) -o $@ -c $<
 
 lu_partg: lu_partg.o
 	$(EXEC) $(NVCC) -g -D_GLIBCXX_DEBUG $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES) -L$(CUDA_PATH)/lib64
@@ -341,10 +340,10 @@ lu_partg: lu_partg.o
 	#$(EXEC) cp $@ ../../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 
 chol_partg.o:cholesky_partg_occupancy_nvshmem.cu
-	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) -g -D_GLIBCXX_DEBUG -Xcompiler -Werror -D_FORCE_INLINES -DVERBOSE --expt-extended-lambda -use_fast_math --expt-relaxed-constexpr -L$(CUDA_PATH)/lib64 $(GENCODE_FLAGS) -o $@ -c $<
+	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) -Xcompiler -Werror -D_FORCE_INLINES -DVERBOSE --expt-extended-lambda -use_fast_math --expt-relaxed-constexpr -L$(CUDA_PATH)/lib64 $(GENCODE_FLAGS) -o $@ -c $<
 
 chol_partg: chol_partg.o
-	$(EXEC) $(NVCC) -g -D_GLIBCXX_DEBUG $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES) -L$(CUDA_PATH)/lib64
+	$(EXEC) $(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES) -L$(CUDA_PATH)/lib64
 	#$(EXEC) mkdir -p ../../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	#$(EXEC) cp $@ ../../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 

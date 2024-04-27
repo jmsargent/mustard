@@ -274,8 +274,8 @@ ALL_LDFLAGS += $(addprefix -Xlinker ,$(LDFLAGS))
 ALL_LDFLAGS += $(addprefix -Xlinker ,$(EXTRA_LDFLAGS))
 
 # Common includes and paths for CUDA
-INCLUDES  := -I./../../../include #../../../Common
-LIBRARIES := -lcuda -lcudart -lcublas -lcusolver -lcusolverMg -lcusparse 
+INCLUDES  := -I./../../include #../../../Common
+LIBRARIES := -lcuda -lcudart -lcublas -lcusolver -lcusolverMg -lcusparse  -L$(CUDA_PATH)/lib64
 
 #INCLUDES  += -I${METIS_PATH}/include
 #LIBRARIES += -L${METIS_PATH}/libmetis -lmetis
@@ -316,7 +316,7 @@ endif
 # Target rules
 all: build
 
-build: cusolver_MgGetrf_example
+build: cusolver_MgPotrf_example1 cusolver_MgGetrf_example
 
 check.deps:
 ifeq ($(SAMPLE_ENABLED),0)
@@ -325,22 +325,29 @@ else
 	@echo "Sample is ready - all dependencies have been met"
 endif
 
+cusolver_MgPotrf_example1.o:cusolver_MgPotrf_example1.cu
+	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) -Xcompiler -Werror -D_FORCE_INLINES -DVERBOSE --expt-extended-lambda -use_fast_math --expt-relaxed-constexpr $(GENCODE_FLAGS) -o $@ -c $<
+
+cusolver_MgPotrf_example1: cusolver_MgPotrf_example1.o
+	$(EXEC) $(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES) 
+	#$(EXEC) mkdir -p ../../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+	#$(EXEC) cp $@ ../../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+
 cusolver_MgGetrf_example.o:cusolver_MgGetrf_example.cu
-	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) -Xcompiler -Werror -D_FORCE_INLINES -DVERBOSE --expt-extended-lambda -use_fast_math --expt-relaxed-constexpr -L$(CUDA_PATH)/lib64 $(GENCODE_FLAGS) -o $@ -c $<
+	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) -Xcompiler -Werror -D_FORCE_INLINES -DVERBOSE --expt-extended-lambda -use_fast_math --expt-relaxed-constexpr $(GENCODE_FLAGS) -o $@ -c $<
 
 cusolver_MgGetrf_example: cusolver_MgGetrf_example.o
-	$(EXEC) $(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES) -L$(CUDA_PATH)/lib64
+	$(EXEC) $(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES)
 	#$(EXEC) mkdir -p ../../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	#$(EXEC) cp $@ ../../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 
 run: build
-	$(EXEC) ./cusolver_MgGetrf_example
+	$(EXEC) ./cusolver_MgPotrf_example1
 
 testrun: build
 
 clean:
-	rm -f cusolver_MgGetrf_example cusolver_MgGetrf_example.o 
+	rm -f cusolver_MgPotrf_example1 cusolver_MgGetrf_example *.o 
 	#rm -rf ../../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/pers_test
 
 clobber: clean
-                                        

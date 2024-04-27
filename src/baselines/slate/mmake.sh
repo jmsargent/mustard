@@ -7,7 +7,7 @@ export SLATE_GPU_AWARE_MPI=1
 # Compile the example.
 
 ${MPI_HOME}/bin/mpicxx -fopenmp -c lu_slate.cc \
--I../../../include \
+-I../../include \
 -I${SLATE_ROOT}/include \
 -I${CUDA_HOME}/include # For CUDA
 # -I${SLATE_ROOT}/include/blas \
@@ -21,6 +21,21 @@ ${MPI_HOME}/bin/mpicxx -fopenmp -o lu_slate lu_slate.o \
 -lslate -llapackpp -lblaspp -lcusolver -lcublas -lcudart
 # -L${BLASPP_ROOT} -Wl,-rpath,${BLASPP_ROOT}/lib64 \
 # -L${LAPACKPP_ROOT} -Wl,-rpath,${LAPACKPP_ROOT}/lib64 \
+
+
+${MPI_HOME}/bin/mpicxx -fopenmp -c chol_slate.cc \
+-I../../include \
+-I${SLATE_ROOT}/include \
+-I${CUDA_HOME}/include # For CUDA
+# -I${SLATE_ROOT}/include/blas \
+# -I${BLASPP_ROOT}/include \
+# -I${LAPACKPP_ROOT}/include \
+# -I${ROCM_PATH}/include # For ROCm
+
+${MPI_HOME}/bin/mpicxx -fopenmp -o chol_slate chol_slate.o \
+-L${SLATE_ROOT}/lib -Wl,-rpath,${SLATE_ROOT}/lib \
+-L${CUDA_HOME}/lib64 -Wl,-rpath,${CUDA_HOME}/lib64 \
+-lslate -llapackpp -lblaspp -lcusolver -lcublas -lcudart
 
 # For ROCm , may need to add:
 # -L${ROCM_PATH}/lib -Wl,-rpath ,${ROCM_PATH}/lib \
