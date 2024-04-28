@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 #include "utils.h"
 #include "broker_queue.h"
@@ -69,7 +70,7 @@ namespace mustard {
         //while (flags[FLAGS_SUBG_COUNT] < totalSubgraphs)
         while (nvshmem_int_atomic_fetch((int *)&flags[FLAGS_SUBG_COUNT], 0) < totalSubgraphs)
         {
-            if (flags[FLAGS_OCCUP] < (107) && queue.size(0) > 0)
+            if (flags[FLAGS_OCCUP] < (100) && queue.size(0) > 0)
             {
                 queue.dequeue(placeholder_bool, placeholder, 0);
                 if (placeholder_bool) {
@@ -126,6 +127,7 @@ namespace mustard {
             } else {
                 // auto dependencies = this->getSubgraphDependencies(tiles);
                 this->subgraphDependencies[index_counter] = this->getSubgraphDependencies(tiles);
+                
                 checkCudaErrors(cudaGraphCreate(&this->subgraphs[index_counter], 0)); 
                 // std::cout << "Start capturing subgraph " << index_counter << std::endl;
                 checkCudaErrors(cudaStreamBeginCaptureToGraph(this->stream, this->subgraphs[index_counter], nullptr, 
@@ -191,22 +193,36 @@ namespace mustard {
         {
             cudaGraph_t g = this->subgraphs[index_counter-1];
             std::vector<cudaGraphNode_t> deps;
-            
+
             cudaGraphNode_t root, tail; 
+            root = getRoot(g);
+            tail = getTail(g);
+
             if (myPE != 0) {
-                root = getRoot(g);
-                tail = getTail(g);
-                deps.push_back(root);
+                size_t edge_count;
+                checkCudaErrors(cudaGraphNodeGetDependentNodes(root, NULL, &edge_count));
+                if (edge_count > 0) { 
+                    std::vector<cudaGraphNode_t> children(edge_count);
+                    checkCudaErrors(cudaGraphNodeGetDependentNodes(root, children.data(), &edge_count));
+                    root = children[0];
+                }
+
+                checkCudaErrors(cudaGraphNodeGetDependencies(tail, NULL, &edge_count));
+                if (edge_count > 0) { 
+                    std::vector<cudaGraphNode_t> parents(edge_count);
+                    checkCudaErrors(cudaGraphNodeGetDependencies(tail, parents.data(), &edge_count));
+                    tail = parents[0];
+                }
             }
+            deps.push_back(root);
             
-            // std::cout << "PE " << myPE << ". Inserting subgraph " << index_counter-1 << " dep:" << deps.size() << std::endl;
             cudaGraphNode_t node;
             checkCudaErrors(cudaGraphAddChildGraphNode(&node, g, deps.data(),
                                                         deps.size(), getrfSubgraph));
-            if (myPE != 0) {
+            //if (myPE == 0) {
                 cudaGraphAddDependencies(g, &node, &tail, 1); // add dep from subg to write memcpy 
                 cudaGraphRemoveDependencies(g, &root, &tail, 1); // remove dep from read memcpy to write memcpy
-            }
+            //}
         }
 
 
@@ -254,7 +270,8 @@ namespace mustard {
                     dependencies.push_back(it->second);
                 }
             }
-
+ 
+            std::sort(dependencies.begin(), dependencies.end());
             auto dedupedEnd = std::unique(dependencies.begin(), dependencies.end());
             dependencies.resize(std::distance(dependencies.begin(), dedupedEnd));
 

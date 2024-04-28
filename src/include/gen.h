@@ -8,7 +8,7 @@ void generateRandomSymmetricPositiveDefiniteMatrix(double *h_A, const size_t n)
 
     for (int i = 0; i < n; i++)
         for (int j = i; j < n; j++)
-            h_A[i * n + j] = 0.5 * (double)rand() / (double)RAND_MAX;
+            h_A[i * n + j] = (double)rand() / (double)RAND_MAX;
 
     for (int i = 0; i < n; i++)
         for (int j = i; j >= 0; j--)

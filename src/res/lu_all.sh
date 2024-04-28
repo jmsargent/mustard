@@ -65,7 +65,7 @@ BASE_STARPU_DIR="../baselines/starpu/lu"
 MG_SAMPLES_DIR="../baselines/cusolver_Mg"
 MCUDAGRAPH_DIR="../mustard"
 
-tile_counts=(8)
+tile_counts=(6)
 # matrix_sizes=(1200)
 matrix_sizes=(12000 24000 36000 48000 60000 72000)
 # T=6
@@ -73,7 +73,6 @@ matrix_sizes=(12000 24000 36000 48000 60000 72000)
 sm_count=100
 workspace=2048
 skip_gpu_regex='^(3|5|7)$'
-TS=12
 verb=""
 timeoutcmd="timeout 15m "
 for N in "${matrix_sizes[@]}"
@@ -116,7 +115,7 @@ do
                         
                     for ((i = 0 ; i < $runs ; i++ )); do
                         if [ $method -eq -1 ] || [ $method -eq 5 ]; then 
-                            STARPU_NCPU=0 STARPU_DISABLE_PINNING=1 STARPU_SCHED=dmdas \
+                            STARPU_NCPU=0 STARPU_DISABLE_PINNING=0 STARPU_SCHED=dmdas \
                             STARPU_PERF_MODEL_HOMOGENEOUS_CUDA=1 STARPU_PERF_MODEL_HOMOGENEOUS_CPU=1 \
                             STARPU_WORKERS_COREID=1-9 \
                             $timeoutcmd $BASE_STARPU_DIR/lu_example_double -size $N -nblocks $T \

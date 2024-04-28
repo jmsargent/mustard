@@ -229,8 +229,14 @@ cudaGraph_t recordSubgraph(double* subMatrix, int subT,
     int subB = subN / subT;
     double one = 1.0;
     double minusOne = -1.0;
+
     
     std::cout << "PE " << myPE << ". Create subgraph with subN=" << subT << " (" << subT << " of " << subB << "x" << subB << " tiles)" << std::endl;
+
+    if (subT > T) {
+        std::cout << "Unable to create such a graphx" << std::endl;
+        exit(0);
+    }
 
     auto getMatrixBlock = [&](double* matrix, int i, int j)
     {
@@ -252,6 +258,7 @@ cudaGraph_t recordSubgraph(double* subMatrix, int subT,
     {
         // A[k][k] = GETRF(A[k][k])
         // L[k][k]*U[k][k] = A[k][k]
+            
         tiledLUGraphCreator->beginCaptureOperation(
             std::make_pair(k, k),
             {std::make_pair(k, k)});
@@ -268,9 +275,10 @@ cudaGraph_t recordSubgraph(double* subMatrix, int subT,
 
         for (int i = k + 1; i < subT; i++)
         {
+            checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[i-1], cublasWorkspaceSize));
             // L[i][k] = TRSM(A[i][k], A[k][k]) // the U part of A[k][k]
             // seems like only these need a separate workspace
-            checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[i], cublasWorkspaceSize));
+            // checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[i], cublasWorkspaceSize));
             tiledLUGraphCreator->beginCaptureOperation(
                 std::make_pair(k, i),
                 {std::make_pair(k, k), std::make_pair(k, i)});
@@ -287,10 +295,11 @@ cudaGraph_t recordSubgraph(double* subMatrix, int subT,
             tiledLUGraphCreator->endCaptureOperation();
 
         }
-        checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[0], cublasWorkspaceSize));
+        // checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[0], cublasWorkspaceSize));
 
         for (int i = k + 1; i < subT; i++)
         {
+            checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[T+i-1], cublasWorkspaceSize));
             tiledLUGraphCreator->beginCaptureOperation(
                 std::make_pair(i, k),
                 {std::make_pair(k, k), std::make_pair(i, k)});
@@ -308,6 +317,7 @@ cudaGraph_t recordSubgraph(double* subMatrix, int subT,
 
             for (int j = k + 1; j < subT; j++)
             {
+                checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[2*subT+j-1], cublasWorkspaceSize));
                 tiledLUGraphCreator->beginCaptureOperation(
                     std::make_pair(i, j),
                     {std::make_pair(i, k), std::make_pair(k, j), std::make_pair(i, j)});
@@ -367,12 +377,12 @@ void tiledLU(bool verify, bool subgraph, bool dot)
     checkCudaErrors(cublasCreate(&cublasHandle));
     // checkCudaErrors(cublasLoggerConfigure(verbose, verbose, 0, NULL));
     // if (subgraph)
-    if (smLimit*T >= 108) {
-        while (smLimit*T >= 108)
-            smLimit -= 1;
-        if (verbose)
-            std::cout << "smLimit changed to " << smLimit << std::endl;
-    }
+    // if (smLimit*T >= 108) {
+    //     while (smLimit*T >= 108)
+    //         smLimit -= 1;
+    //     if (verbose)
+    //         std::cout << "smLimit changed to " << smLimit << std::endl;
+    // }
         
     checkCudaErrors(cublasSetSmCountTarget(cublasHandle, smLimit));
 
@@ -407,16 +417,17 @@ void tiledLU(bool verify, bool subgraph, bool dot)
 
     // void *h_workspace, *d_workspace_cusolver;
     double *d_workspace_cusolver;
-    int workspaces = T;//(T-1)*(T-1);
+    int workspaces = T*T;
     void **d_workspace_cublas = (void **)malloc(sizeof(void *)*workspaces);
     int *d_info;
+    workspaceInBytesOnDevice*=8;
     // checkCudaErrors(cudaMalloc(&h_workspace, workspaceInBytesOnHost));
-    checkCudaErrors(cudaMalloc(&d_workspace_cusolver, workspaceInBytesOnDevice*8));
+    checkCudaErrors(cudaMalloc(&d_workspace_cusolver, workspaceInBytesOnDevice));
     int cublasWorkspaceSize = 1024*workspace; // (B/256+1)*B*256*4;
 
-    while (cublasWorkspaceSize * T >= 1024*1024*2 - (workspaceInBytesOnDevice*8)) {
-        cublasWorkspaceSize = cublasWorkspaceSize >> 1;
-    }
+    // while (cublasWorkspaceSize * T >= 1024*1024*2 - (workspaceInBytesOnDevice*8)) {
+    //     cublasWorkspaceSize = cublasWorkspaceSize >> 1;
+    // }
 
     for (int i = 0; i < workspaces; i++) {
         checkCudaErrors(cudaMalloc(&d_workspace_cublas[i], cublasWorkspaceSize));
@@ -451,15 +462,19 @@ void tiledLU(bool verify, bool subgraph, bool dot)
     {
         // A[k][k] = GETRF(A[k][k])
         // L[k][k]*U[k][k] = A[k][k]
+        checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[0], cublasWorkspaceSize));
         tiledLUGraphCreator->beginCaptureOperation(
             std::make_pair(k, k),
             {std::make_pair(k, k)});
-        if (myPE != 0 && subgraph) cudaMemcpy2DAsync(getMatrixBlock(d_matrix, k, k), 
-                                        sizeof(double) * N,
-                                        getMatrixBlock(d_matrix_remote, k, k), 
-                                        sizeof(double) * N, 
-                                        sizeof(double) * B, 
-                                        B, cudaMemcpyDeviceToDevice, s);                        
+        if (subgraph) {
+            mustard::kernel_occupancy_update<<<1, 1, 0, s>>>(smLimit, d_flags);
+            if (myPE != 0) cudaMemcpy2DAsync(getMatrixBlock(d_matrix, k, k), 
+                                            sizeof(double) * N,
+                                            getMatrixBlock(d_matrix_remote, k, k), 
+                                            sizeof(double) * N, 
+                                            sizeof(double) * B, 
+                                            B, cudaMemcpyDeviceToDevice, s);                        
+        }          
         if (B <= MAX_TILE || !subgraph)
             checkCudaErrors(cusolverDnDgetrf(
                 cusolverDnHandle,
@@ -485,19 +500,19 @@ void tiledLU(bool verify, bool subgraph, bool dot)
         //     NULL,
         //     0,
         //     d_info));
-        if (myPE != 0 && subgraph) cudaMemcpy2DAsync(getMatrixBlock(d_matrix_remote, k, k), 
-                                        sizeof(double) * N,
-                                        getMatrixBlock(d_matrix, k, k), 
-                                        sizeof(double) * N, 
-                                        sizeof(double) * B, 
-                                        B, cudaMemcpyDeviceToDevice, s);
+        if (subgraph) {
+            if (myPE != 0) cudaMemcpy2DAsync(getMatrixBlock(d_matrix_remote, k, k), 
+                                            sizeof(double) * N,
+                                            getMatrixBlock(d_matrix, k, k), 
+                                            sizeof(double) * N, 
+                                            sizeof(double) * B, 
+                                            B, cudaMemcpyDeviceToDevice, s);
+            mustard::kernel_occupancy_update<<<1, 1, 0, s>>>(-smLimit, d_flags);
+        }
         tiledLUGraphCreator->endCaptureOperation();
         
         if (B > MAX_TILE && subgraph) {
-            int subT = max(int(B/MAX_TILE), 2);
-            if (B%subT > 0) {
-                while (B%subT != 0) subT++;
-            }
+            int subT =ceil((float)B/(float)MAX_TILE);
             cudaGraph_t subLU = recordSubgraph(getMatrixBlock(d_matrix, k, k), subT, 
                                                 s, cusolverDnHandle, cublasHandle,
                                                 d_workspace_cusolver, d_workspace_cublas,
@@ -550,12 +565,13 @@ void tiledLU(bool verify, bool subgraph, bool dot)
             tiledLUGraphCreator->endCaptureOperation();
 
         }
-        checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[0], cublasWorkspaceSize));
+        //checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[0], cublasWorkspaceSize));
 
         for (int i = k + 1; i < T; i++)
         {
             // U[k][i] = TRSM(A[k][k], A[k][i]) // the L part of A[k][k]
-            // checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[i-1 + T], workspaceInBytesOnDevice));
+            checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[T+i], cublasWorkspaceSize));
+            // checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[i-1 + T], cublasWorkspaceSize));
             tiledLUGraphCreator->beginCaptureOperation(
                 std::make_pair(i, k),
                 {std::make_pair(k, k), std::make_pair(i, k)});
@@ -600,7 +616,7 @@ void tiledLU(bool verify, bool subgraph, bool dot)
             {
                 // A[j][i] = GEMM(A[j][k], A[i][k])
                 // A[j][i] = A[j][i] - L[j][k] * L[i][k]^T
-                // checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[(i-1)*T + (j-1)], workspaceInBytesOnDevice));
+                checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[2*T + j-1], cublasWorkspaceSize));
                 tiledLUGraphCreator->beginCaptureOperation(
                     std::make_pair(i, j),
                     {std::make_pair(i, k), std::make_pair(k, j), std::make_pair(i, j)});
@@ -630,13 +646,13 @@ void tiledLU(bool verify, bool subgraph, bool dot)
                 checkCudaErrors(cublasGemmEx(
                     cublasHandle,
                     CUBLAS_OP_N,
-                    CUBLAS_OP_N, // CUBLAS_OP_T
+                    CUBLAS_OP_N,
                     B, B, B,
                     &minusOne,
-                    getMatrixBlock(d_matrix, i, k), CUDA_R_64F, N, // i + k * N
-                    getMatrixBlock(d_matrix, k, j), CUDA_R_64F, N, // j + i * N
+                    getMatrixBlock(d_matrix, i, k), CUDA_R_64F, N,
+                    getMatrixBlock(d_matrix, k, j), CUDA_R_64F, N,
                     &one,
-                    getMatrixBlock(d_matrix, i, j), CUDA_R_64F, N, // k + i * N
+                    getMatrixBlock(d_matrix, i, j), CUDA_R_64F, N,
                     CUBLAS_COMPUTE_64F,
                     CUBLAS_GEMM_DEFAULT));
                 if (subgraph) {
@@ -714,7 +730,7 @@ void tiledLU(bool verify, bool subgraph, bool dot)
         for (int i = 0; i < totalNodes; i++)
         {
             char filename[20];
-            sprintf(filename, "./graph_%d.dot", i);
+            sprintf(filename, "./graph_%d_%d.dot", i, myPE);
             if (dot)
                 checkCudaErrors(cudaGraphDebugDotPrint(tiledLUGraphCreator->subgraphs[i], filename, 0));
             checkCudaErrors(cudaGraphInstantiate(&h_subgraphsExec[i], tiledLUGraphCreator->subgraphs[i], cudaGraphInstantiateFlagDeviceLaunch));

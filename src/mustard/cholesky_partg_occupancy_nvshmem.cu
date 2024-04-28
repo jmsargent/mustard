@@ -274,7 +274,7 @@ void tiledCholesky(bool verify, bool subgraph, bool dot)
 
     // void *h_workspace, *d_workspace_cusolver;
     double *d_workspace_cusolver;
-    int workspaces = (T-1)*(T-1);
+    int workspaces = T*T;//(T-1)*(T-1);
     void **d_workspace_cublas = (void **)malloc(sizeof(void *)*workspaces);
     int *d_info;
     workspaceInBytesOnDevice*=8;
@@ -412,19 +412,19 @@ void tiledCholesky(bool verify, bool subgraph, bool dot)
             tiledCholeskyGraphCreator->endCaptureOperation();
 
         }
-        //checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[0], cublasWorkspaceSize));
+        // checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[0], cublasWorkspaceSize));
 
         for (int i = k + 1; i < T; i++)
         {
             // U[k][i] = TRSM(A[k][k], A[k][i]) // the L part of A[k][k]
-            checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[i-1 + T], workspaceInBytesOnDevice));
+            checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[i + T], cublasWorkspaceSize));
             tiledCholeskyGraphCreator->beginCaptureOperation(
                 std::make_pair(i, i),
                 {std::make_pair(i, i), std::make_pair(i, k)});
             
             if (subgraph) {
                 mustard::kernel_occupancy_update<<<1, 1, 0, s>>>(smLimit, d_flags);
-                if (myPE != 0 && k != 0) cudaMemcpy2DAsync(getMatrixBlock(d_matrix, i, k), 
+                if (myPE != 0) cudaMemcpy2DAsync(getMatrixBlock(d_matrix, i, k), 
                                                 sizeof(double) * N,
                                                 getMatrixBlock(d_matrix_remote, i, k), 
                                                 sizeof(double) * N, 
@@ -459,7 +459,7 @@ void tiledCholesky(bool verify, bool subgraph, bool dot)
             {
                 // A[j][i] = GEMM(A[j][k], A[i][k])
                 // A[j][i] = A[j][i] - L[j][k] * L[i][k]^T
-                checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[(i-1)*T + (j-1)], workspaceInBytesOnDevice));
+                checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[2*T+ (i-1)*T + (j-1)], cublasWorkspaceSize));
                 tiledCholeskyGraphCreator->beginCaptureOperation(
                     std::make_pair(j, i),
                     {std::make_pair(j, i), std::make_pair(j, k), std::make_pair(i, k)});
@@ -489,7 +489,7 @@ void tiledCholesky(bool verify, bool subgraph, bool dot)
                 checkCudaErrors(cublasGemmEx(
                     cublasHandle,
                     CUBLAS_OP_N,
-                    CUBLAS_OP_T, 
+                    CUBLAS_OP_T,
                     B, B, B,
                     &minusOne,
                     getMatrixBlock(d_matrix, j, k), CUDA_R_64F, N,
@@ -540,7 +540,7 @@ void tiledCholesky(bool verify, bool subgraph, bool dot)
         for (int i = 0; i < totalNodes; i++)
         {
             h_dependencies[i] = tiledCholeskyGraphCreator->subgraphDependencies[i].size();
-            //std::cout << h_dependencies[i] << " ";
+            // std::cout << h_dependencies[i] << " ";
         }
         if (verbose) std::cout << "Populating the queue..." << std::endl;
         // std::cout << std::endl;
