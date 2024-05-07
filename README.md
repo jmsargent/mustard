@@ -4,4 +4,4 @@ Mustard is a device-side execution model for static task graphs, which moves the
 
 <img src="scripts/figures/Cholesky_24000_8GPU_flops_legend.pdf" alt="drawing" width="400" />  |  <img src="scripts/figures/LU_24000_8GPU_flops_legend.pdf" alt="drawing" width="400" />
 
-<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=https://github.com/iturimbetov/mustard/scripts/figures/Cholesky_24000_8GPU_flops_legend.pdf" width="500" height="375">
+<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=https://github.com/iturimbetov/mustard/blob/main/scripts/figures/Cholesky_24000_8GPU_flops_legend.pdf" width="500" height="375">
