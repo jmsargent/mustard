@@ -4,3 +4,31 @@ Mustard is a device-side execution model for static task graphs, which moves the
 
 <img src="scripts/figures/Cholesky_24000_8GPU_flops_legend.png" alt="drawing" width="800" /> 
 <img src="scripts/figures/LU_24000_8GPU_flops_legend.png" alt="drawing" width="800" />
+
+## Dependencies
+
+- C++ Compiler with C++-17 support
+- CUDA 12.2 or above
+- [NVSHMEM 2.7.0 or above](https://docs.nvidia.com/nvshmem/install-guide/index.html)
+  - InfiniBand GPUDirect Async support*
+- OpenMPI 4.1.4 or above
+
+### Baselines
+StarPU:
+- CUDA, hwloc
+Slate:
+- CUDA, OpenMP
+
+---
+
+## Acknowledgement
+
+---
+
+This project has received funding from the European Research
+Council (ERC) under the European Union’s Horizon 2020 research
+and innovation programme (grant agreement No 949587).
+
+---
+
+  
