@@ -18,12 +18,16 @@ parser.add_argument('-t', '--title', action='store_true',
                     help='add title to the graph')
 parser.add_argument('-st', '--subtitle', action='store_true', 
                     help='add title to the graph')
+parser.add_argument('-show', '--show', action='store_true', 
+                    help='show the plot')
+parser.add_argument('-f', '--format', help='pdf | png | jpg')
 # parser.add_argument("-q", "--quiet",
 #                     action="store_false", dest="verbose", default=True,
 #                     help="don't print status messages to stdout")
 
 args = parser.parse_args()
 
+format = "pdf"
 sizes = [12000, 24000, 36000, 48000, 60000]
 if args.size == None:
     print("generating for all sizes")
@@ -31,6 +35,11 @@ else:
     size = int(args.size)
     if size in sizes:
         sizes = [size]
+if args.format != None:
+    format = args.format
+    if format not in ["pdf", "png", "jpg"]:
+        print("Wrong format, should be one of [pdf | png | jpg]")
+        exit(0)
 
 gpu_count = 8
 metric = "flops"
@@ -275,7 +284,7 @@ def plotForSize(size):
                                 ncol=2, columnspacing=2, prop={'size': 9.4}, handleheight=1.6)
                 labels = legend.get_texts()
                 labels[2].set_fontweight('bold')
-        else:
+        elif (gpu+1 != gpu_count):
             axes[index].set(ylabel=None)
         axes[index].set(xticklabels=[])  # remove the tick labels
         axes[index].set(xlabel=None)
@@ -300,17 +309,18 @@ def plotForSize(size):
 
         index+=1
     plt.tight_layout()
-    
+
     if (addtitle):
-        fig.suptitle(method_name, fontsize=14, x=0.47)
+        fig.suptitle(method_name+" "+str(size)+'x'+str(size), fontsize=14, x=0.47)
         fig.subplots_adjust(top=0.85)
         if (addsubtitle):
             fig.subplots_adjust(top=0.8)
     figname = method_name + "_" + str(size) + "_"  + str(gpu_count) + "GPU_" + metric
     if (addlegend):
         figname += "_legend"
-    plt.savefig('figures/'+figname + ".pdf")
-    plt.show()
+    plt.savefig('figures/'+figname + "." + format)
+    if (args.show):
+        plt.show()
 
 for size in sizes:
     plotForSize(size)
