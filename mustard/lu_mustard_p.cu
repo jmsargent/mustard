@@ -183,9 +183,8 @@ void tiledLUPart(bool verify, bool dot)
     // Does it only work with symmetric?
     // tile_size is B*B; a column is tile_size*T; and there are T / nPE of them, if evenly divided;
     d_matrix = (double *) nvshmem_malloc(sliceSize * sliceMax * sizeof(double));
-    // TODO: optimally, buffer needs to be of sliceSize, and 
-    // !: extra copies should be removed
     d_buffer = (double *) nvshmem_malloc(sliceSize * sliceMax * sizeof(double));
+    //d_buffer = (double *) nvshmem_malloc(N * N * sizeof(double));
 
     for (int i = 0; i < sliceCount; i++)
         checkCudaErrors(cudaMemcpy2D(getMatrixBlock(d_matrix, i, 0), 
@@ -257,6 +256,7 @@ void tiledLUPart(bool verify, bool dot)
     // setup streams and events for graph construction
     cudaStream_t s;
     checkCudaErrors(cudaStreamCreate(&s));
+    numCopyStreams = 128;
     cudaStream_t copyStreams[numCopyStreams];
     cudaEvent_t copyEvents[numCopyStreams+1];
     checkCudaErrors(cudaEventCreate(&copyEvents[numCopyStreams]));
@@ -280,17 +280,21 @@ void tiledLUPart(bool verify, bool dot)
     auto tiledLUGraphCreator = std::make_unique<mustard::TiledGraphCreator>(s, graph, false, totalNodes);
 
     int nodeIndex = 0;
+    auto waitHook = std::make_pair(-1, -1);
     for (int k = 0; k < T; k++)
     {
+        std::cout << "k=" << k << std::endl;
         //* A[k][k] = GETRF(A[k][k])
         //* L[k][k]*U[k][k] = A[k][k]
         
-        int currentPE = k % nPE;
+        int activePE = k % nPE;
         int myNodeIndex = 0;
         // int local_k = max(0, k - myPE)/nPE;
         int local_k = k / nPE;
+        int distance = myPE - activePE;
+        if (distance < 0) distance += nPE;
         
-        if (currentPE == myPE) {
+        if (activePE == myPE) {
             // checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[myNodeIndex++], cublasWorkspaceSize));
             tiledLUGraphCreator->beginCaptureOperation(
                 std::make_pair(k, k),
@@ -314,19 +318,42 @@ void tiledLUPart(bool verify, bool dot)
                                                             B, B, local_N, nodeIndex);
 
             tiledLUGraphCreator->endCaptureOperation();
-        } else if (k+(currentPE-myPE)+1 < T) { // if there are neighbor tiles
+        } else if (distance < (T-k)) { // if there are neighbor tiles
         //} else if (k+myPE < T && k+1 < T) { // if there are neighbor tiles  //! make sure it works
-            tiledLUGraphCreator->beginCaptureOperation(
-                std::make_pair(k, k),
-                {std::make_pair(k, k)});
+            if (waitHook.first == -1)
+                tiledLUGraphCreator->beginCaptureOperation(
+                    std::make_pair(k, k),
+                    {std::make_pair(k, k)});
+            else 
+                tiledLUGraphCreator->beginCaptureOperation(
+                    std::make_pair(k, k),
+                    {waitHook, std::make_pair(k, k)});
             // !: alternative design - add conditional while nodes OR use dependency waits on the remote
             // !: also, need to update local dependencies on the same GPU without communicating with others
             // *: current design - chain broadcast (works because immediate neighbor's tiles are more important)
             // *also distributes dependency update load and does not require busy-waiting on remote memory
             mustard::kernel_dep_wait<<<1, 1, 0, s>>>(d_dependencies, nodeIndex, myPE);
             h_dependencies[nodeIndex]++;
-            if (k+myPE+1 < T && (k % nPE) != neighborPE) // if there's a neighbor and it's not the parent
+            if ((k % nPE) != neighborPE && distance+1 < (T-k)) // if there's a neighbor and it's not the parent
                 mustard::kernel_dep_update_noq<<<1, 1, 0, s>>>(d_dependencies, nodeIndex, neighborPE, myPE);
+            nvshmemx_quiet_on_stream(s); // need this for consistency
+            checkCudaErrors(cudaEventRecord(copyEvents[numCopyStreams], s));
+            for (int row = 0; row < B; row++) {
+                int idx = row%numCopyStreams;
+                checkCudaErrors(cudaStreamWaitEvent(copyStreams[idx], copyEvents[numCopyStreams], 0));
+                // nvshmemx_double_get_on_stream(getMatrixBlock(d_buffer, k, k, N)+N*row,
+                //                             getMatrixBlock(d_matrix, local_k, k)+local_N*row, 
+                //                             B, k % nPE, copyStreams[idx]);
+                nvshmemx_double_get_on_stream(getMatrixBlock(d_buffer, k % nPE, k)+local_N*row,
+                                            getMatrixBlock(d_matrix, local_k, k)+local_N*row, 
+                                            B, k % nPE, copyStreams[idx]);
+                // nvshmemx_double_get_on_stream(getMatrixBlock(d_buffer, 0, k, B)+B*row,
+                //                             getMatrixBlock(d_matrix, local_k, k)+local_N*row, 
+                //                             B, k % nPE, copyStreams[idx]);
+                checkCudaErrors(cudaEventRecord(copyEvents[idx], copyStreams[idx]));
+                checkCudaErrors(cudaStreamWaitEvent(s, copyEvents[idx], 0));
+            }
+            nvshmemx_quiet_on_stream(s);
             tiledLUGraphCreator->endCaptureOperation();
         }
         nodeIndex++; 
@@ -338,7 +365,7 @@ void tiledLUPart(bool verify, bool dot)
             //* no need for local_i version because everything here is local
             //* as all the tiles belong to the same column and therefore same PE
 
-            if (currentPE == myPE) {
+            if (activePE == myPE) {
                 // ?: there seemed to be some issue with this workspace thingy
                 checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[myNodeIndex++], 
                                                    cublasWorkspaceSize));
@@ -364,7 +391,9 @@ void tiledLUPart(bool verify, bool dot)
                     mustard::kernel_dep_update_noq<<<1, 1, 0, s>>>(d_dependencies, nodeIndex, neighborPE, myPE);
                 tiledLUGraphCreator->endCaptureOperation();
             
-            } else if (k+(currentPE-myPE)+1 < T) { // if there are neighbor tiles
+            } else if (distance < (T-k)) { // if there are neighbor tiles
+            //} else if (myPE-activePE < T-k || k+myPE < T) { // if there are neighbor tiles
+            //} else if (k+(activePE-myPE)+1 < T) { // if there are neighbor tiles
             //} else if (local_k < sliceCount && k+1 < T) { // if there are neighbor tiles
             //} else if (k+myPE < T) { // if there are neighbor tiles
                 tiledLUGraphCreator->beginCaptureOperation(
@@ -373,9 +402,28 @@ void tiledLUPart(bool verify, bool dot)
                 mustard::kernel_dep_wait<<<1, 1, 0, s>>>(d_dependencies, nodeIndex, myPE);
                 h_dependencies[nodeIndex]++;
                 // if there's a neighbor and it's not the parent, update their dependencies too (chain)
-                if (k+myPE+1 < T && (k % nPE) != neighborPE) 
+                //if (k+myPE+1 < T && (k % nPE) != neighborPE) 
+                if ((k % nPE) != neighborPE && distance+1 < (T-k)) // if there's a neighbor and it's not the parent
                     mustard::kernel_dep_update_noq<<<1, 1, 0, s>>>(d_dependencies, nodeIndex, 
                                                                               neighborPE, myPE);
+                nvshmemx_quiet_on_stream(s);
+                checkCudaErrors(cudaEventRecord(copyEvents[numCopyStreams], s));
+                for (int row = 0; row < B; row++) {
+                    int idx = row%numCopyStreams;
+                    checkCudaErrors(cudaStreamWaitEvent(copyStreams[idx], copyEvents[numCopyStreams], 0));
+                    // nvshmemx_double_get_on_stream(getMatrixBlock(d_buffer, k, i, N)+N*row, 
+                    //                             getMatrixBlock(d_matrix, local_k, i)+local_N*row, 
+                    //                             B, k % nPE, copyStreams[idx]);
+                    nvshmemx_double_get_on_stream(getMatrixBlock(d_buffer, k % nPE, i)+local_N*row, 
+                                                getMatrixBlock(d_matrix, local_k, i)+local_N*row, 
+                                                B, k % nPE, copyStreams[idx]);
+                    // nvshmemx_double_get_on_stream(getMatrixBlock(d_buffer, 0, i, B)+B*row, 
+                    //                             getMatrixBlock(d_matrix, local_k, i)+local_N*row, 
+                    //                             B, k % nPE, copyStreams[idx]);
+                    checkCudaErrors(cudaEventRecord(copyEvents[idx], copyStreams[idx]));
+                    checkCudaErrors(cudaStreamWaitEvent(s, copyEvents[idx], 0));
+                }
+                nvshmemx_quiet_on_stream(s);
                 tiledLUGraphCreator->endCaptureOperation();
             }
             nodeIndex++; 
@@ -385,10 +433,10 @@ void tiledLUPart(bool verify, bool dot)
         {
             //* U[k][i] = TRSM(A[k][k], A[k][i]) // the L part of A[k][k]
             
-            currentPE = i % nPE;
+            activePE = i % nPE;
             int local_i = i / nPE;
             
-            if (currentPE == myPE) {
+            if (activePE == myPE) {
                 checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[myNodeIndex++], 
                                                    cublasWorkspaceSize));
                 tiledLUGraphCreator->beginCaptureOperation(
@@ -397,17 +445,6 @@ void tiledLUPart(bool verify, bool dot)
 
                 // *: required memcpy for TRSM_RIGHT: needs the GETRF output
                 if (k % nPE != myPE) { // this should only be copied if the parent is remote
-                    nvshmemx_quiet_on_stream(s); // need this for consistency
-                    checkCudaErrors(cudaEventRecord(copyEvents[numCopyStreams], s));
-                        for (int row = 0; row < B; row++) {
-                            int idx = row%numCopyStreams;
-                            checkCudaErrors(cudaStreamWaitEvent(copyStreams[idx], copyEvents[numCopyStreams], 0));
-                            nvshmemx_double_get_on_stream(getMatrixBlock(d_buffer, local_k, k)+local_N*row,
-                                                        getMatrixBlock(d_matrix, local_k, k)+local_N*row, 
-                                                        B, k % nPE, copyStreams[idx]);
-                            checkCudaErrors(cudaEventRecord(copyEvents[idx], copyStreams[idx]));
-                            checkCudaErrors(cudaStreamWaitEvent(s, copyEvents[idx], 0));
-                        }
                     checkCudaErrors(cublasDtrsm(
                         cublasHandle,
                         CUBLAS_SIDE_RIGHT, 
@@ -416,8 +453,9 @@ void tiledLUPart(bool verify, bool dot)
                         CUBLAS_DIAG_NON_UNIT, 
                         B, B,
                         &one,
-                       
-                        getMatrixBlock(d_buffer, local_k, k), local_N,  // ! (d_buffer, 0, k) + B when optimized;
+                        getMatrixBlock(d_buffer, k%nPE, k), local_N, 
+                        //getMatrixBlock(d_buffer, 0, k, B), B, 
+                        //getMatrixBlock(d_buffer, k, k, N), N, 
                         getMatrixBlock(d_matrix, local_i, k), local_N));   
                 } else {
                     checkCudaErrors(cublasDtrsm(
@@ -444,7 +482,11 @@ void tiledLUPart(bool verify, bool dot)
                 //* A[j][i] = GEMM(A[j][k], A[i][k])
                 //* A[j][i] = A[j][i] - L[j][k] * L[i][k]^T
 
-                if (currentPE == myPE) {
+                if (activePE == myPE) {
+                    if (waitHook.first != i) {
+                        waitHook = std::make_pair(i, j);
+                        // std::cout << "waitHook set to " << waitHook << std::endl;
+                    }
                     checkCudaErrors(cublasSetWorkspace(cublasHandle, d_workspace_cublas[myNodeIndex++], 
                                                        cublasWorkspaceSize));
                     tiledLUGraphCreator->beginCaptureOperation(
@@ -452,18 +494,6 @@ void tiledLUPart(bool verify, bool dot)
                         {std::make_pair(i, k), std::make_pair(k, j), std::make_pair(i, j)}); 
                     // *: required memcpy for GEMM: needs the TRSM_LEFT output (TRSM_RIGHT is local)
                     if (k % nPE != myPE) { // this should only be copied if the parent is remote
-                        nvshmemx_quiet_on_stream(s);
-                        checkCudaErrors(cudaEventRecord(copyEvents[numCopyStreams], s));
-                        for (int row = 0; row < B; row++) {
-                            int idx = row%numCopyStreams;
-                            checkCudaErrors(cudaStreamWaitEvent(copyStreams[idx], copyEvents[numCopyStreams], 0));
-                            // ! (d_buffer, 0, k) + B when optimized
-                            nvshmemx_double_get_on_stream(getMatrixBlock(d_buffer, local_k, j)+local_N*row, 
-                                                        getMatrixBlock(d_matrix, local_k, j)+local_N*row, 
-                                                        B, k % nPE, copyStreams[idx]);
-                            checkCudaErrors(cudaEventRecord(copyEvents[idx], copyStreams[idx]));
-                            checkCudaErrors(cudaStreamWaitEvent(s, copyEvents[idx], 0));
-                        }
                         checkCudaErrors(cublasGemmEx(
                             cublasHandle,
                             CUBLAS_OP_N,
@@ -471,7 +501,9 @@ void tiledLUPart(bool verify, bool dot)
                             B, B, B,
                             &minusOne,
                             getMatrixBlock(d_matrix, local_i, k), CUDA_R_64F, local_N,
-                            getMatrixBlock(d_buffer, local_k, j), CUDA_R_64F, local_N, //! (0, j) when optimized, B
+                            getMatrixBlock(d_buffer, k%nPE, j), CUDA_R_64F, local_N, 
+                            //getMatrixBlock(d_buffer, 0, j, B), CUDA_R_64F, B, 
+                            //getMatrixBlock(d_buffer, k, j, N), CUDA_R_64F, N, 
                             &one,
                             getMatrixBlock(d_matrix, local_i, j), CUDA_R_64F, local_N,
                             CUBLAS_COMPUTE_64F,
@@ -514,17 +546,17 @@ void tiledLUPart(bool verify, bool dot)
         }
     }     
     
-    // for (int pe = 0; pe < nPE; pe++) {
-    //     nvshmem_barrier_all();
-    //     if (myPE == pe) {
-    //         std::cout << " PE " << myPE << std::endl;
-    //         for (int i = 0; i < totalNodes; i++)
-    //         {
-    //             if (h_dependencies[i] > 0) 
-    //                 std::cout << i << ":" << h_dependencies[i] << std::endl;
-    //         }
-    //     }
-    // }
+    for (int pe = 0; pe < nPE; pe++) {
+        nvshmem_barrier_all();
+        if (myPE == pe) {
+            std::cout << " PE " << myPE << std::endl;
+            for (int i = 0; i < totalNodes; i++)
+            {
+                if (h_dependencies[i] > 0) 
+                    std::cout << i << ":" << h_dependencies[i] << std::endl;
+            }
+        }
+    }
 
     checkCudaErrors(cudaMemcpy((void *)d_dependencies, (void *)h_dependencies, 
                             sizeof(int) * totalNodes, cudaMemcpyHostToDevice));
@@ -546,6 +578,7 @@ void tiledLUPart(bool verify, bool dot)
         checkCudaErrors(cudaStreamSynchronize(s));
         clock.end(s);
         checkCudaErrors(cudaDeviceSynchronize());
+        printf("device %d | %d run finished\n", myPE, i);
         nvshmem_barrier_all();     
 
         checkCudaErrors(cudaMemcpy((void *)d_dependencies, (void *)h_dependencies, 
@@ -585,18 +618,14 @@ void tiledLUPart(bool verify, bool dot)
         // copy the remote tiles 
         for (int iPE = 1; iPE < nPE; iPE++) {
 
-            // std::cout << "buffer of  PE " << myPE << std::endl;
-            // kernel_print_matrix<<<1, 1>>>(d_buffer, N, local_N);
-            // cudaDeviceSynchronize();
-
-            nvshmem_double_get(d_buffer, d_matrix, local_N * N, iPE);
+            nvshmem_double_get(d_matrix, d_matrix, local_N * N, iPE);
             int remoteSliceCount = T / nPE + (T % nPE > iPE);
             if (verbose)
                 std::cout << "Collect " << remoteSliceCount << " slices from PE " << iPE << std::endl;
             for (int i = 0; i < remoteSliceCount; i++) {
                 checkCudaErrors(cudaMemcpy2D(getMatrixBlock(h_L, i*nPE + iPE, 0, N), 
                                             sizeof(double) * N, 
-                                            getMatrixBlock(d_buffer, i, 0), 
+                                            getMatrixBlock(d_matrix, i, 0), 
                                             sizeof(double) * local_N, 
                                             sizeof(double) * B, 
                                             N, cudaMemcpyDeviceToHost)); 
@@ -605,7 +634,7 @@ void tiledLUPart(bool verify, bool dot)
             }
 
             // std::cout << "buffer of  PE " << myPE << std::endl;
-            // kernel_print_matrix<<<1, 1>>>(d_buffer, N, local_N);
+            // kernel_print_matrix<<<1, 1>>>(d_buffer, N, B);
             // cudaDeviceSynchronize();
         }
         // checkCudaErrors(cudaMemcpy(h_L, d_matrix, N * N * sizeof(double), cudaMemcpyDeviceToHost));
