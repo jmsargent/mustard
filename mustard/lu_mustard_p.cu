@@ -680,7 +680,7 @@ int main(int argc, char **argv)
 
     nvshmem_init();
 
-    myPE = nvshmem_team_my_pe(NVSHMEMX_TEAM_NODE);
+    myPE = nvshmem_my_pe();
     nPE = nvshmem_n_pes();
     checkCudaErrors(cudaSetDevice(myPE));
 
