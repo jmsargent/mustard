@@ -22,6 +22,7 @@ size_t B = N / 5;
 size_t T = N / B;
 size_t local_width;
 int myPE;
+int myNodePE;
 int nPE;
 int verbose = 0;
 int workspace = 256;
@@ -681,8 +682,9 @@ int main(int argc, char **argv)
     nvshmem_init();
 
     myPE = nvshmem_my_pe();
+    myNodePE = nvshmem_team_my_pe(NVSHMEMX_TEAM_NODE);
     nPE = nvshmem_n_pes();
-    checkCudaErrors(cudaSetDevice(myPE));
+    checkCudaErrors(cudaSetDevice(myNodePE));
 
     int gpusAvailable = -1;
     checkCudaErrors(cudaGetDeviceCount(&gpusAvailable));
