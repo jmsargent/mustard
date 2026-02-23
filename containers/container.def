@@ -1,0 +1,30 @@
+Bootstrap: docker
+From: nvcr.io/nvidia/nvhpc:24.9-devel-cuda12.6-ubuntu24.04
+
+%post
+    apt-get update -y
+    apt-get install -y \
+        cmake \
+        python3 \
+        python3-pip \
+        python3-dev \
+        build-essential \
+        git
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    # Define the base HPC SDK path
+    export NV_BASE=/opt/nvidia/hpc_sdk/Linux_x86_64/24.9
+    
+    # Define the specific CUDA and NVSHMEM paths you requested
+    export CUDA_HOME=$NV_BASE/cuda/12.6
+    export NVSHMEM_HOME=$NV_BASE/comm_libs/12.6/nvshmem
+    
+    # Add the compilers and CUDA binaries to the system PATH
+    export PATH=$NV_BASE/compilers/bin:$CUDA_HOME/bin:$PATH
+    # Add CUDA libraries to the linker path
+    export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$NVSHMEM_HOME/lib:$LD_LIBRARY_PATH
+
+%runscript
+    exec "$@"

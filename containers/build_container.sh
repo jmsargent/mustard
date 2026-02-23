@@ -1,0 +1,1 @@
+apptainer build nvhpc.sif docker://nvcr.io/nvidia/nvhpc:24.9-devel-cuda12.6-ubuntu22.04
